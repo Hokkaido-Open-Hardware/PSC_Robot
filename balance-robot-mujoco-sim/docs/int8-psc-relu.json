@@ -1,0 +1,535 @@
+{
+  "model_sha256": "d72da249232580542383e932026cafb49834f1b77bfd872ca3d5c6b66c914333",
+  "prepare_status": 0,
+  "source_sha256": {
+    "src/api/tflite/tflite_inspect.cc": "f75580370ef4913d056dfdd4584635a02e192b38534a1401e6dbd96026b5fa19",
+    "src/api/tflite/tflite_runtime.cc": "b6ae16d36035ae919c7e4d5e67e8b86dca2afa13d6bad9221ee61082a9f40388",
+    "src/api/tflite/tflite_quant.cc": "b5dcefbefa753026808f13def1730db60355d39f3278299d773b332ca2b288aa",
+    "src/api/tflite/tflite_synap.cc": "fdf90acacc91e0800b1faa430e6f34826e47a90e15fe6918b4f243379ce5f773",
+    "tests/tflite/synap_mock.cc": "37bf9f9cf1136f9dfa0aa6e7338dc42f8eed58de49f5a961448b15822d56a84a"
+  },
+  "scope": "host CPU runtime only; no target hardware test",
+  "samples": 5123,
+  "mismatches": 14,
+  "maximum_error_lsb": 1,
+  "reference_mismatches": 165,
+  "mismatch_examples": [
+    {
+      "input": [
+        [
+          6,
+          -3,
+          1,
+          0
+        ]
+      ],
+      "psc": -69,
+      "litert_optimized": -68,
+      "litert_reference": -69
+    },
+    {
+      "input": [
+        [
+          6,
+          -3,
+          1,
+          0
+        ]
+      ],
+      "psc": -69,
+      "litert_optimized": -68,
+      "litert_reference": -69
+    },
+    {
+      "input": [
+        [
+          4,
+          1,
+          1,
+          0
+        ]
+      ],
+      "psc": -66,
+      "litert_optimized": -65,
+      "litert_reference": -65
+    },
+    {
+      "input": [
+        [
+          6,
+          -3,
+          1,
+          0
+        ]
+      ],
+      "psc": -69,
+      "litert_optimized": -68,
+      "litert_reference": -69
+    },
+    {
+      "input": [
+        [
+          6,
+          -3,
+          1,
+          0
+        ]
+      ],
+      "psc": -69,
+      "litert_optimized": -68,
+      "litert_reference": -69
+    },
+    {
+      "input": [
+        [
+          4,
+          1,
+          1,
+          0
+        ]
+      ],
+      "psc": -66,
+      "litert_optimized": -65,
+      "litert_reference": -65
+    },
+    {
+      "input": [
+        [
+          4,
+          1,
+          1,
+          0
+        ]
+      ],
+      "psc": -66,
+      "litert_optimized": -65,
+      "litert_reference": -65
+    },
+    {
+      "input": [
+        [
+          4,
+          1,
+          1,
+          0
+        ]
+      ],
+      "psc": -66,
+      "litert_optimized": -65,
+      "litert_reference": -65
+    },
+    {
+      "input": [
+        [
+          4,
+          1,
+          1,
+          0
+        ]
+      ],
+      "psc": -66,
+      "litert_optimized": -65,
+      "litert_reference": -65
+    },
+    {
+      "input": [
+        [
+          4,
+          1,
+          1,
+          0
+        ]
+      ],
+      "psc": -66,
+      "litert_optimized": -65,
+      "litert_reference": -65
+    }
+  ],
+  "arena_bytes": 332,
+  "rollouts": [
+    {
+      "scenario": "balance-0",
+      "category": "balance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 12.57469604759164,
+      "rms_pitch_deg": 1.881843892910915,
+      "maximum_tilt_deg": 12.574696503817625,
+      "output_vs_lqr_rmse_rad_s": 1.194116546761065,
+      "output_vs_lqr_max_error_rad_s": 3.039013716772563,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "balance-1",
+      "category": "balance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 13.145828329109715,
+      "rms_pitch_deg": 2.0613976420937234,
+      "maximum_tilt_deg": 13.145829567312457,
+      "output_vs_lqr_rmse_rad_s": 1.2046860737904679,
+      "output_vs_lqr_max_error_rad_s": 5.268541187184347,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "balance-2",
+      "category": "balance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 8.057088747144222,
+      "rms_pitch_deg": 1.5756218838894387,
+      "maximum_tilt_deg": 8.057104880601916,
+      "output_vs_lqr_rmse_rad_s": 1.1849639561669507,
+      "output_vs_lqr_max_error_rad_s": 3.0359707939914253,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "balance-3",
+      "category": "balance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 11.00061827017596,
+      "rms_pitch_deg": 1.8482767625645817,
+      "maximum_tilt_deg": 11.000631669180244,
+      "output_vs_lqr_rmse_rad_s": 1.1735424956507878,
+      "output_vs_lqr_max_error_rad_s": 3.045872480519865,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "balance-4",
+      "category": "balance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 17.9250183564233,
+      "rms_pitch_deg": 2.326476692093181,
+      "maximum_tilt_deg": 17.925037962618116,
+      "output_vs_lqr_rmse_rad_s": 1.1872079017422708,
+      "output_vs_lqr_max_error_rad_s": 3.190111608927541,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "balance-5",
+      "category": "balance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 11.890243583602388,
+      "rms_pitch_deg": 1.9238854395658749,
+      "maximum_tilt_deg": 11.890277133230397,
+      "output_vs_lqr_rmse_rad_s": 1.181173127332239,
+      "output_vs_lqr_max_error_rad_s": 4.46405003001507,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "disturbance-0",
+      "category": "disturbance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 11.961055043636458,
+      "rms_pitch_deg": 1.8611583029617045,
+      "maximum_tilt_deg": 11.961161522679951,
+      "output_vs_lqr_rmse_rad_s": 1.1824613573241862,
+      "output_vs_lqr_max_error_rad_s": 3.027579502742476,
+      "disturbance_torque_nm": 0.015,
+      "recovery_s": 0,
+      "recovered": true,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "disturbance-1",
+      "category": "disturbance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 12.379137976617743,
+      "rms_pitch_deg": 2.004053139586237,
+      "maximum_tilt_deg": 12.379272215793286,
+      "output_vs_lqr_rmse_rad_s": 1.1830469247550794,
+      "output_vs_lqr_max_error_rad_s": 4.921139035472333,
+      "disturbance_torque_nm": -0.025,
+      "recovery_s": 0.7749999999971386,
+      "recovered": true,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "disturbance-2",
+      "category": "disturbance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 14.735927195973796,
+      "rms_pitch_deg": 2.1735424086745883,
+      "maximum_tilt_deg": 14.735930772252887,
+      "output_vs_lqr_rmse_rad_s": 1.2405619627681954,
+      "output_vs_lqr_max_error_rad_s": 3.181195384826275,
+      "disturbance_torque_nm": 0.035,
+      "recovery_s": 0.975000000003778,
+      "recovered": true,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "disturbance-3",
+      "category": "disturbance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 8.115914055836646,
+      "rms_pitch_deg": 1.6629376388896744,
+      "maximum_tilt_deg": 8.115915173934818,
+      "output_vs_lqr_rmse_rad_s": 1.1845526102257062,
+      "output_vs_lqr_max_error_rad_s": 3.032594770301188,
+      "disturbance_torque_nm": -0.015,
+      "recovery_s": 0,
+      "recovered": true,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "disturbance-4",
+      "category": "disturbance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 15.798438333936389,
+      "rms_pitch_deg": 2.0827815350595005,
+      "maximum_tilt_deg": 15.79844966745182,
+      "output_vs_lqr_rmse_rad_s": 1.1876111666389904,
+      "output_vs_lqr_max_error_rad_s": 3.0164123606584017,
+      "disturbance_torque_nm": 0.025,
+      "recovery_s": 0.7999999999979686,
+      "recovered": true,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "disturbance-5",
+      "category": "disturbance",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 11.8070331066161,
+      "rms_pitch_deg": 2.057224525221072,
+      "maximum_tilt_deg": 11.807033138476273,
+      "output_vs_lqr_rmse_rad_s": 1.1721554771653573,
+      "output_vs_lqr_max_error_rad_s": 4.219166610230037,
+      "disturbance_torque_nm": -0.035,
+      "recovery_s": 1.4450000000193803,
+      "recovered": true,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "drive-0",
+      "category": "drive",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 7.429162421779491,
+      "rms_pitch_deg": 1.8585776911291796,
+      "maximum_tilt_deg": 7.429164453520336,
+      "output_vs_lqr_rmse_rad_s": 1.0339161213644996,
+      "output_vs_lqr_max_error_rad_s": 3.0051708312617373,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "drive-1",
+      "category": "drive",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 6.058795751855327,
+      "rms_pitch_deg": 1.8719118404077704,
+      "maximum_tilt_deg": 6.058796081800399,
+      "output_vs_lqr_rmse_rad_s": 1.0428785137652443,
+      "output_vs_lqr_max_error_rad_s": 3.006307403727264,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "drive-2",
+      "category": "drive",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 13.994632296820328,
+      "rms_pitch_deg": 2.2311657468860475,
+      "maximum_tilt_deg": 13.994632834583744,
+      "output_vs_lqr_rmse_rad_s": 1.0498611670945257,
+      "output_vs_lqr_max_error_rad_s": 2.986017778224418,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "drive-3",
+      "category": "drive",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 10.78485887038163,
+      "rms_pitch_deg": 2.1794013046925027,
+      "maximum_tilt_deg": 10.784858872275052,
+      "output_vs_lqr_rmse_rad_s": 1.0191581759876132,
+      "output_vs_lqr_max_error_rad_s": 4.141996616174815,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "drive-4",
+      "category": "drive",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 12.358687962358903,
+      "rms_pitch_deg": 2.2750509366635865,
+      "maximum_tilt_deg": 12.358687969373232,
+      "output_vs_lqr_rmse_rad_s": 1.0769869114082797,
+      "output_vs_lqr_max_error_rad_s": 3.1593586191005727,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "drive-5",
+      "category": "drive",
+      "fell": false,
+      "balancing_time_s": 20.000000000383046,
+      "samples": 4000,
+      "maximum_pitch_deg": 5.036363521325409,
+      "rms_pitch_deg": 1.7719590719380756,
+      "maximum_tilt_deg": 5.036407794956682,
+      "output_vs_lqr_rmse_rad_s": 1.0009921139375284,
+      "output_vs_lqr_max_error_rad_s": 3.2300132999705413,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "stress-0",
+      "category": "stress",
+      "fell": true,
+      "balancing_time_s": 10.155000000056228,
+      "samples": 2031,
+      "maximum_pitch_deg": 45.9283199255258,
+      "rms_pitch_deg": 8.537911351825267,
+      "maximum_tilt_deg": 45.92831994049611,
+      "output_vs_lqr_rmse_rad_s": 6.11645258713489,
+      "output_vs_lqr_max_error_rad_s": 33.93131321042193,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "stress-1",
+      "category": "stress",
+      "fell": true,
+      "balancing_time_s": 5.129999999991379,
+      "samples": 1026,
+      "maximum_pitch_deg": 46.730221362395085,
+      "rms_pitch_deg": 4.602927761071717,
+      "maximum_tilt_deg": 46.73022444830402,
+      "output_vs_lqr_rmse_rad_s": 1.5460068356695893,
+      "output_vs_lqr_max_error_rad_s": 10.647584352031686,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "stress-2",
+      "category": "stress",
+      "fell": true,
+      "balancing_time_s": 10.155000000056228,
+      "samples": 2031,
+      "maximum_pitch_deg": 46.26978991045593,
+      "rms_pitch_deg": 9.302418531924651,
+      "maximum_tilt_deg": 46.26979001457613,
+      "output_vs_lqr_rmse_rad_s": 6.573420337320495,
+      "output_vs_lqr_max_error_rad_s": 34.02312644179469,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "stress-3",
+      "category": "stress",
+      "fell": true,
+      "balancing_time_s": 5.144999999991344,
+      "samples": 1029,
+      "maximum_pitch_deg": 45.28376906166853,
+      "rms_pitch_deg": 4.506583329601461,
+      "maximum_tilt_deg": 45.28379392369971,
+      "output_vs_lqr_rmse_rad_s": 1.5664648327742037,
+      "output_vs_lqr_max_error_rad_s": 9.983416213449384,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "stress-4",
+      "category": "stress",
+      "fell": true,
+      "balancing_time_s": 10.155000000056228,
+      "samples": 2031,
+      "maximum_pitch_deg": 47.20389513691943,
+      "rms_pitch_deg": 8.057082578727865,
+      "maximum_tilt_deg": 47.20389513856413,
+      "output_vs_lqr_rmse_rad_s": 6.7879584734877865,
+      "output_vs_lqr_max_error_rad_s": 34.06256732998588,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    },
+    {
+      "scenario": "stress-5",
+      "category": "stress",
+      "fell": true,
+      "balancing_time_s": 5.139999999991356,
+      "samples": 1028,
+      "maximum_pitch_deg": 45.030158208956124,
+      "rms_pitch_deg": 4.45238514712402,
+      "maximum_tilt_deg": 45.030164341634666,
+      "output_vs_lqr_rmse_rad_s": 1.5379141276490556,
+      "output_vs_lqr_max_error_rad_s": 9.615121775613883,
+      "disturbance_torque_nm": 0.0,
+      "recovery_s": null,
+      "recovered": null,
+      "controller": "PSC CPU host INT8"
+    }
+  ]
+}

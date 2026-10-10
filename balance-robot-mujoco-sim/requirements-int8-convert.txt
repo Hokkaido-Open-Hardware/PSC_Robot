@@ -1,0 +1,2 @@
+# Install separately under Python 3.13 (tested) for model conversion only.
+tensorflow==2.20.0

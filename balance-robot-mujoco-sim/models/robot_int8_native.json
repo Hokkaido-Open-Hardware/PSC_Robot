@@ -1,0 +1,303 @@
+{
+  "version": 1,
+  "features": [
+    "pitch",
+    "filtered_pitch_rate",
+    "filtered_wheel_angular_velocity",
+    "target_linear_velocity"
+  ],
+  "sha256": "e50051a4ace252a721cfac160273df102aa927bc59f2404123f6653ebdf0daac",
+  "source_sha256": "cf4a17aa10e789d6f39d7289d479541139fc118fab97d0a229157950edcacf99",
+  "mean": [
+    -0.001092555234208703,
+    -0.001000638003461063,
+    2.106362819671631,
+    0.036608029156923294
+  ],
+  "scale": [
+    0.06410734355449677,
+    0.14833472669124603,
+    8.999282836914062,
+    0.15407003462314606
+  ],
+  "output_mean": 2.3699944019317627,
+  "output_scale": 10.287489891052246,
+  "architecture": [
+    4,
+    16,
+    16,
+    1
+  ],
+  "relu_only": false,
+  "macs": 336,
+  "parameters": 369,
+  "file_size_bytes": 2768,
+  "float_tflite_size_bytes": 3304,
+  "float_tflite_max_error_rad_s": 3.2666874858477968e-06,
+  "tensorflow_version": "2.20.0",
+  "calibration": {
+    "sha256": "4774c77b9b7c60d6e7e9936fd0ef1dfeb357add0365d98cef38d4af75b60b042",
+    "seed": 8128,
+    "selection_seed": 42,
+    "samples": 4102,
+    "max_pitch": null,
+    "normalized_min": [
+      -11.87630844116211,
+      -21.543277740478516,
+      -2.5632824897766113,
+      -4.13193941116333
+    ],
+    "normalized_max": [
+      12.1078462600708,
+      21.190458297729492,
+      4.817769527435303,
+      3.656726598739624
+    ]
+  },
+  "tensors": [
+    {
+      "index": 0,
+      "name": "serving_default_normalized_state:0",
+      "dtype": "INT8",
+      "shape": [
+        1,
+        4
+      ],
+      "scales": [
+        0.16758327186107635
+      ],
+      "zero_points": [
+        1
+      ]
+    },
+    {
+      "index": 1,
+      "name": "tfl.pseudo_qconst",
+      "dtype": "INT32",
+      "shape": [
+        1
+      ],
+      "scales": [
+        0.00011091442866018042
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "tfl.pseudo_qconst1",
+      "dtype": "INT8",
+      "shape": [
+        1,
+        16
+      ],
+      "scales": [
+        0.003876450937241316
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "tfl.pseudo_qconst2",
+      "dtype": "INT32",
+      "shape": [
+        16
+      ],
+      "scales": [
+        0.0003779348626267165
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "tfl.pseudo_qconst3",
+      "dtype": "INT8",
+      "shape": [
+        16,
+        16
+      ],
+      "scales": [
+        0.009198576211929321
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "tfl.pseudo_qconst4",
+      "dtype": "INT32",
+      "shape": [
+        16
+      ],
+      "scales": [
+        0.0009581891354173422
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "tfl.pseudo_qconst5",
+      "dtype": "INT8",
+      "shape": [
+        16,
+        4
+      ],
+      "scales": [
+        0.005717689637094736
+      ],
+      "zero_points": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "MatMul;add",
+      "dtype": "INT8",
+      "shape": [
+        1,
+        16
+      ],
+      "scales": [
+        0.07245290279388428
+      ],
+      "zero_points": [
+        -5
+      ]
+    },
+    {
+      "index": 8,
+      "name": "LeakyRelu",
+      "dtype": "INT8",
+      "shape": [
+        1,
+        16
+      ],
+      "scales": [
+        0.04108623415231705
+      ],
+      "zero_points": [
+        -106
+      ]
+    },
+    {
+      "index": 9,
+      "name": "MatMul_1;add_1",
+      "dtype": "INT8",
+      "shape": [
+        1,
+        16
+      ],
+      "scales": [
+        0.05930596962571144
+      ],
+      "zero_points": [
+        19
+      ]
+    },
+    {
+      "index": 10,
+      "name": "LeakyRelu_1",
+      "dtype": "INT8",
+      "shape": [
+        1,
+        16
+      ],
+      "scales": [
+        0.02861236408352852
+      ],
+      "zero_points": [
+        -98
+      ]
+    },
+    {
+      "index": 11,
+      "name": "PartitionedCall:0",
+      "dtype": "INT8",
+      "shape": [
+        1,
+        1
+      ],
+      "scales": [
+        0.04138699546456337
+      ],
+      "zero_points": [
+        -65
+      ]
+    }
+  ],
+  "operators": [
+    {
+      "name": "FULLY_CONNECTED",
+      "version": 4,
+      "inputs": [
+        0,
+        6,
+        5
+      ],
+      "outputs": [
+        7
+      ],
+      "fused_activation": "NONE"
+    },
+    {
+      "name": "LEAKY_RELU",
+      "version": 1,
+      "inputs": [
+        7
+      ],
+      "outputs": [
+        8
+      ]
+    },
+    {
+      "name": "FULLY_CONNECTED",
+      "version": 4,
+      "inputs": [
+        8,
+        4,
+        3
+      ],
+      "outputs": [
+        9
+      ],
+      "fused_activation": "NONE"
+    },
+    {
+      "name": "LEAKY_RELU",
+      "version": 1,
+      "inputs": [
+        9
+      ],
+      "outputs": [
+        10
+      ]
+    },
+    {
+      "name": "FULLY_CONNECTED",
+      "version": 4,
+      "inputs": [
+        10,
+        2,
+        1
+      ],
+      "outputs": [
+        11
+      ],
+      "fused_activation": "NONE"
+    }
+  ],
+  "inputs": [
+    0
+  ],
+  "outputs": [
+    11
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-09",
+  "preserved_original_sha256": {
+    "robot_nn.npz": "cf4a17aa10e789d6f39d7289d479541139fc118fab97d0a229157950edcacf99",
+    "robot_nn.pt": "3a32c461092c226f461a047fb664afcb31d2b1ce731bf5b594d389987e0fcc47",
+    "robot_nn.data.npz": "b181a0c7afd8b44b2b686f58c7bcc981228d3bfd7d22d8772bf70448ac9866e9",
+    "robot_nn.training.json": "5c1005020c7cdd33a6fd81b97512dd31dfbe3f99a90e0eb1e6a64dd6384fac4a",
+    "robot_rl.rl.zip": "c526548491db351e74edb69edeee1170e42fdf578eee27720cd52fea0d7ad101"
+  },
+  "unittest": {
+    "result": "PASS",
+    "tests": 39,
+    "seconds": 33.238
+  },
+  "gui": {
+    "result": "PASS",
+    "modes": [
+      "NN INT8",
+      "Neural Network",
+      "LQR",
+      "Reinforcement Learning",
+      "NN INT8"
+    ],
+    "checks": [
+      "real integer interpreter output drives motors",
+      "AUTO",
+      "Reset",
+      "OpenGL framebuffer",
+      "clean shutdown"
+    ]
+  },
+  "psc_native": {
+    "result": "PASS expected unsupported",
+    "prepare": -202
+  },
+  "psc_relu": {
+    "prepare": "PASS",
+    "strict_byte_parity": "FAIL",
+    "mismatches": 14,
+    "samples": 5123,
+    "maximum_error_lsb": 1,
+    "same_suite_host_control": "PASS: 18 operating episodes, no falls; six stress episodes fall as baselines"
+  },
+  "scope": "PSC_Robot changes only; PSC-ONE source read and host-built without modification",
+  "git": "No add, commit or push. robot_rl.rl.zip was already modified at start and its initial hash is preserved."
+}

@@ -1,0 +1,16 @@
+{
+  "model_sha256": "d72da249232580542383e932026cafb49834f1b77bfd872ca3d5c6b66c914333",
+  "prepare_status": 0,
+  "source_sha256": {
+    "src/api/tflite/tflite_inspect.cc": "f75580370ef4913d056dfdd4584635a02e192b38534a1401e6dbd96026b5fa19",
+    "src/api/tflite/tflite_runtime.cc": "b6ae16d36035ae919c7e4d5e67e8b86dca2afa13d6bad9221ee61082a9f40388",
+    "src/api/tflite/tflite_quant.cc": "b5dcefbefa753026808f13def1730db60355d39f3278299d773b332ca2b288aa",
+    "src/api/tflite/tflite_synap.cc": "fdf90acacc91e0800b1faa430e6f34826e47a90e15fe6918b4f243379ce5f773",
+    "tests/tflite/synap_mock.cc": "37bf9f9cf1136f9dfa0aa6e7338dc42f8eed58de49f5a961448b15822d56a84a"
+  },
+  "scope": "host CPU runtime only; no target hardware test",
+  "samples": 5123,
+  "mismatches": 0,
+  "maximum_error_lsb": 0,
+  "arena_bytes": 332
+}

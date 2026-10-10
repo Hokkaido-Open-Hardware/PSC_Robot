@@ -1,0 +1,426 @@
+{
+  "model": "/home/haruhiko/Program/PSC_Robot/balance-robot-mujoco-sim/models/robot_nn.npz",
+  "duration_s": 10,
+  "control_hz": 200.0,
+  "physics_timestep_s": 2.5e-05,
+  "fall_threshold_deg": 45,
+  "definitions": {
+    "balancing_time": "time to first |pitch| >45deg, capped at duration",
+    "pitch": "post-step body pitch until fall, degrees",
+    "velocity": "target minus raw forward wheel average * radius, RMSE until fall",
+    "output": "clipped pre-yaw NN minus LQR on identical inputs along each trajectory",
+    "summary": "unweighted mean across scenarios, except maximum_pitch is the global maximum"
+  },
+  "scenarios": [
+    {
+      "name": "balance-positive",
+      "pitch": 0.12,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.0
+      ],
+      "yaw": 0.0,
+      "duration": 10,
+      "ramp": false
+    },
+    {
+      "name": "balance-negative",
+      "pitch": -0.12,
+      "heading": 0.7,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.0
+      ],
+      "yaw": 0.0,
+      "duration": 10,
+      "ramp": false
+    },
+    {
+      "name": "gentle-forward",
+      "pitch": 0.08,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0,
+        0,
+        0.15,
+        0.3,
+        0.3
+      ],
+      "yaw": 0.0,
+      "duration": 10,
+      "ramp": true
+    },
+    {
+      "name": "gentle-reverse",
+      "pitch": -0.08,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0,
+        0,
+        -0.15,
+        -0.3,
+        -0.3
+      ],
+      "yaw": 0.0,
+      "duration": 10,
+      "ramp": true
+    },
+    {
+      "name": "forward",
+      "pitch": 0.08,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.3
+      ],
+      "yaw": 0.0,
+      "duration": 10,
+      "ramp": false
+    },
+    {
+      "name": "reverse",
+      "pitch": -0.08,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        -0.3
+      ],
+      "yaw": 0.0,
+      "duration": 10,
+      "ramp": false
+    },
+    {
+      "name": "forward-reverse",
+      "pitch": 0.15,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0,
+        0.6,
+        -0.6,
+        0
+      ],
+      "yaw": 0.0,
+      "duration": 10,
+      "ramp": false
+    },
+    {
+      "name": "turning",
+      "pitch": -0.15,
+      "heading": -0.8,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.2,
+        -0.2
+      ],
+      "yaw": 1,
+      "duration": 10,
+      "ramp": false
+    },
+    {
+      "name": "fast-forward",
+      "pitch": 0.05,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0,
+        2,
+        4
+      ],
+      "yaw": 0.0,
+      "duration": 10,
+      "ramp": false
+    },
+    {
+      "name": "fast-reverse",
+      "pitch": -0.05,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0,
+        -2,
+        -4
+      ],
+      "yaw": 0.0,
+      "duration": 10,
+      "ramp": false
+    }
+  ],
+  "summary": {
+    "LQR": {
+      "balancing_time_s": 5.510999999997906,
+      "rms_pitch_deg": 6.2669367161453025,
+      "maximum_pitch_deg": 46.49748729742995,
+      "velocity_tracking_rmse_m_s": 0.5928979571586039,
+      "output_rmse_rad_s": 0.016976649904469232,
+      "falls": 6
+    },
+    "Neural Network": {
+      "balancing_time_s": 5.510999999997906,
+      "rms_pitch_deg": 6.266020646562081,
+      "maximum_pitch_deg": 46.49762183314246,
+      "velocity_tracking_rmse_m_s": 0.5927997988141925,
+      "output_rmse_rad_s": 0.017448478970006637,
+      "falls": 6
+    }
+  },
+  "results": [
+    {
+      "scenario": "balance-positive",
+      "controller": "LQR",
+      "fell": false,
+      "balancing_time_s": 10,
+      "rms_pitch_deg": 2.1930352000876128,
+      "maximum_pitch_deg": 13.175124543377072,
+      "velocity_tracking_rmse_m_s": 0.0760897584275035,
+      "output_rmse_rad_s": 0.00519490999591701,
+      "output_max_error_rad_s": 0.1208983376034034,
+      "samples": 2000
+    },
+    {
+      "scenario": "balance-positive",
+      "controller": "Neural Network",
+      "fell": false,
+      "balancing_time_s": 10,
+      "rms_pitch_deg": 2.196546479133714,
+      "maximum_pitch_deg": 13.203509608304797,
+      "velocity_tracking_rmse_m_s": 0.0762178926901443,
+      "output_rmse_rad_s": 0.005216608808780848,
+      "output_max_error_rad_s": 0.12243165246809795,
+      "samples": 2000
+    },
+    {
+      "scenario": "balance-negative",
+      "controller": "LQR",
+      "fell": false,
+      "balancing_time_s": 10,
+      "rms_pitch_deg": 2.1623793168581544,
+      "maximum_pitch_deg": 14.27785210102316,
+      "velocity_tracking_rmse_m_s": 0.07508818174549707,
+      "output_rmse_rad_s": 0.0008112309905747238,
+      "output_max_error_rad_s": 0.010867559768234614,
+      "samples": 2000
+    },
+    {
+      "scenario": "balance-negative",
+      "controller": "Neural Network",
+      "fell": false,
+      "balancing_time_s": 10,
+      "rms_pitch_deg": 2.1624020972218334,
+      "maximum_pitch_deg": 14.274289201218705,
+      "velocity_tracking_rmse_m_s": 0.0750783581328868,
+      "output_rmse_rad_s": 0.0008107958851973834,
+      "output_max_error_rad_s": 0.010866813966723399,
+      "samples": 2000
+    },
+    {
+      "scenario": "gentle-forward",
+      "controller": "LQR",
+      "fell": false,
+      "balancing_time_s": 10,
+      "rms_pitch_deg": 1.9961460737941144,
+      "maximum_pitch_deg": 8.744820423513346,
+      "velocity_tracking_rmse_m_s": 0.1932954166482732,
+      "output_rmse_rad_s": 0.0028983482084222398,
+      "output_max_error_rad_s": 0.0162517002068423,
+      "samples": 2000
+    },
+    {
+      "scenario": "gentle-forward",
+      "controller": "Neural Network",
+      "fell": false,
+      "balancing_time_s": 10,
+      "rms_pitch_deg": 1.996447445735674,
+      "maximum_pitch_deg": 8.74824549014596,
+      "velocity_tracking_rmse_m_s": 0.19326034699264735,
+      "output_rmse_rad_s": 0.0028979959142419703,
+      "output_max_error_rad_s": 0.016453524810023268,
+      "samples": 2000
+    },
+    {
+      "scenario": "gentle-reverse",
+      "controller": "LQR",
+      "fell": false,
+      "balancing_time_s": 10,
+      "rms_pitch_deg": 1.9961460737941203,
+      "maximum_pitch_deg": 8.744820423513355,
+      "velocity_tracking_rmse_m_s": 0.19329541664827288,
+      "output_rmse_rad_s": 0.050950358978834,
+      "output_max_error_rad_s": 0.2074112782705697,
+      "samples": 2000
+    },
+    {
+      "scenario": "gentle-reverse",
+      "controller": "Neural Network",
+      "fell": false,
+      "balancing_time_s": 10,
+      "rms_pitch_deg": 1.9876418712604464,
+      "maximum_pitch_deg": 8.744406052703495,
+      "velocity_tracking_rmse_m_s": 0.19196427957553755,
+      "output_rmse_rad_s": 0.055766155283639145,
+      "output_max_error_rad_s": 0.2067721231588493,
+      "samples": 2000
+    },
+    {
+      "scenario": "forward",
+      "controller": "LQR",
+      "fell": true,
+      "balancing_time_s": 0.20999999999998095,
+      "rms_pitch_deg": 15.607975354579779,
+      "maximum_pitch_deg": 45.01685891624799,
+      "velocity_tracking_rmse_m_s": 1.6306530882459052,
+      "output_rmse_rad_s": 0.06620423480449514,
+      "output_max_error_rad_s": 0.23136613488261304,
+      "samples": 42
+    },
+    {
+      "scenario": "forward",
+      "controller": "Neural Network",
+      "fell": true,
+      "balancing_time_s": 0.20999999999998095,
+      "rms_pitch_deg": 15.615052574704766,
+      "maximum_pitch_deg": 45.0359889454331,
+      "velocity_tracking_rmse_m_s": 1.6310487356140018,
+      "output_rmse_rad_s": 0.06613696606880855,
+      "output_max_error_rad_s": 0.23163325946159574,
+      "samples": 42
+    },
+    {
+      "scenario": "reverse",
+      "controller": "LQR",
+      "fell": true,
+      "balancing_time_s": 0.20999999999998095,
+      "rms_pitch_deg": 15.607975354579734,
+      "maximum_pitch_deg": 45.01685891624779,
+      "velocity_tracking_rmse_m_s": 1.6306530882459054,
+      "output_rmse_rad_s": 0.010709021359320593,
+      "output_max_error_rad_s": 0.024045081942311697,
+      "samples": 42
+    },
+    {
+      "scenario": "reverse",
+      "controller": "Neural Network",
+      "fell": true,
+      "balancing_time_s": 0.20999999999998095,
+      "rms_pitch_deg": 15.607663855791312,
+      "maximum_pitch_deg": 45.01564968524497,
+      "velocity_tracking_rmse_m_s": 1.6306109103245816,
+      "output_rmse_rad_s": 0.010708633113218324,
+      "output_max_error_rad_s": 0.024044495008560318,
+      "samples": 42
+    },
+    {
+      "scenario": "forward-reverse",
+      "controller": "LQR",
+      "fell": true,
+      "balancing_time_s": 2.624999999997217,
+      "rms_pitch_deg": 7.310157690263255,
+      "maximum_pitch_deg": 46.42338176032867,
+      "velocity_tracking_rmse_m_s": 0.45123811425240123,
+      "output_rmse_rad_s": 0.02453393444430442,
+      "output_max_error_rad_s": 0.305254244102521,
+      "samples": 525
+    },
+    {
+      "scenario": "forward-reverse",
+      "controller": "Neural Network",
+      "fell": true,
+      "balancing_time_s": 2.624999999997217,
+      "rms_pitch_deg": 7.307859267566185,
+      "maximum_pitch_deg": 46.358644290900145,
+      "velocity_tracking_rmse_m_s": 0.45103570346105815,
+      "output_rmse_rad_s": 0.024496501388646865,
+      "output_max_error_rad_s": 0.30379224255421633,
+      "samples": 525
+    },
+    {
+      "scenario": "turning",
+      "controller": "LQR",
+      "fell": true,
+      "balancing_time_s": 5.154999999991321,
+      "rms_pitch_deg": 6.818028442075968,
+      "maximum_pitch_deg": 45.71375751919062,
+      "velocity_tracking_rmse_m_s": 0.3189013699111658,
+      "output_rmse_rad_s": 0.003756029036763222,
+      "output_max_error_rad_s": 0.033588703798345776,
+      "samples": 1031
+    },
+    {
+      "scenario": "turning",
+      "controller": "Neural Network",
+      "fell": true,
+      "balancing_time_s": 5.154999999991321,
+      "rms_pitch_deg": 6.808543561808618,
+      "maximum_pitch_deg": 45.22099874402978,
+      "velocity_tracking_rmse_m_s": 0.3190156269519731,
+      "output_rmse_rad_s": 0.003749092845486611,
+      "output_max_error_rad_s": 0.03386785669708203,
+      "samples": 1031
+    },
+    {
+      "scenario": "fast-forward",
+      "controller": "LQR",
+      "fell": true,
+      "balancing_time_s": 3.4549999999952825,
+      "rms_pitch_deg": 4.488761827710142,
+      "maximum_pitch_deg": 46.49748729742995,
+      "velocity_tracking_rmse_m_s": 0.6798825687305572,
+      "output_rmse_rad_s": 0.0030581076264642867,
+      "output_max_error_rad_s": 0.029955997450059613,
+      "samples": 691
+    },
+    {
+      "scenario": "fast-forward",
+      "controller": "Neural Network",
+      "fell": true,
+      "balancing_time_s": 3.4549999999952825,
+      "rms_pitch_deg": 4.488948430231719,
+      "maximum_pitch_deg": 46.497568157902435,
+      "velocity_tracking_rmse_m_s": 0.679882051657795,
+      "output_rmse_rad_s": 0.0030519245351398362,
+      "output_max_error_rad_s": 0.029955835481359827,
+      "samples": 691
+    },
+    {
+      "scenario": "fast-reverse",
+      "controller": "LQR",
+      "fell": true,
+      "balancing_time_s": 3.4549999999952825,
+      "rms_pitch_deg": 4.48876182771014,
+      "maximum_pitch_deg": 46.49748729742995,
+      "velocity_tracking_rmse_m_s": 0.6798825687305572,
+      "output_rmse_rad_s": 0.001650323599596685,
+      "output_max_error_rad_s": 0.014596938085560396,
+      "samples": 691
+    },
+    {
+      "scenario": "fast-reverse",
+      "controller": "Neural Network",
+      "fell": true,
+      "balancing_time_s": 3.4549999999952825,
+      "rms_pitch_deg": 4.489100882166531,
+      "maximum_pitch_deg": 46.49762183314246,
+      "velocity_tracking_rmse_m_s": 0.6798840827412997,
+      "output_rmse_rad_s": 0.0016501158569068469,
+      "output_max_error_rad_s": 0.014597018488785807,
+      "samples": 691
+    }
+  ],
+  "versions": {
+    "mujoco": "3.14.0",
+    "numpy": "2.5.3"
+  }
+}

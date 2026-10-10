@@ -1,0 +1,726 @@
+{
+  "rl_model": "/tmp/psc-rl-velocity.rl.zip",
+  "nn_model": "/home/haruhiko/Program/PSC_Robot/balance-robot-mujoco-sim/models/robot_nn.npz",
+  "training_steps": 12288,
+  "duration_s": 8.0,
+  "control_dt": 0.005,
+  "physics_dt": 2.5e-05,
+  "fall_threshold_rad": 0.7853981633974483,
+  "scenarios": [
+    {
+      "name": "balance-positive",
+      "pitch": 0.06,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.0
+      ],
+      "yaw": 0.0,
+      "duration": 8.0,
+      "ramp": false,
+      "roll": 0.0
+    },
+    {
+      "name": "balance-negative",
+      "pitch": -0.06,
+      "heading": 0.7,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.0
+      ],
+      "yaw": 0.0,
+      "duration": 8.0,
+      "ramp": false,
+      "roll": 0.0
+    },
+    {
+      "name": "forward-ramp",
+      "pitch": 0.04,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.0,
+        0.3,
+        0.3
+      ],
+      "yaw": 0.0,
+      "duration": 8.0,
+      "ramp": true,
+      "roll": 0.0
+    },
+    {
+      "name": "reverse-ramp",
+      "pitch": -0.04,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.0,
+        -0.3,
+        -0.3
+      ],
+      "yaw": 0.0,
+      "duration": 8.0,
+      "ramp": true,
+      "roll": 0.0
+    },
+    {
+      "name": "forward-stop-reverse",
+      "pitch": 0.02,
+      "heading": 0.0,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.0,
+        0.3,
+        0.0,
+        -0.3,
+        0.0
+      ],
+      "yaw": 0.0,
+      "duration": 8.0,
+      "ramp": true,
+      "roll": 0.0
+    },
+    {
+      "name": "yaw-mixing",
+      "pitch": -0.03,
+      "heading": -0.8,
+      "pitch_rate": 0.0,
+      "wheel_velocity": 0.0,
+      "targets": [
+        0.0,
+        0.15
+      ],
+      "yaw": 0.5,
+      "duration": 8.0,
+      "ramp": true,
+      "roll": 0.0
+    }
+  ],
+  "definitions": {
+    "fall": "body up-axis tilt from world Z exceeds threshold, or invalid physics",
+    "velocity": "post-step actual body forward speed (-body Y), RMSE until fall",
+    "wheel_velocity": "post-step (-left+right)*radius/2, RMSE until fall",
+    "summary": "unweighted scenario means; read error together with survival/fall rate",
+    "yaw": "manual mixing only; turning is not a learned objective"
+  },
+  "summary": {
+    "LQR": {
+      "falls": 0,
+      "episodes": 6,
+      "fall_rate": 0.0,
+      "mean_balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.1361600520857271,
+      "wheel_tracking_rmse_m_s": 0.140806602369951
+    },
+    "Neural Network": {
+      "falls": 0,
+      "episodes": 6,
+      "fall_rate": 0.0,
+      "mean_balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.1358240694020363,
+      "wheel_tracking_rmse_m_s": 0.14046971223820018
+    },
+    "Reinforcement Learning": {
+      "falls": 6,
+      "episodes": 6,
+      "fall_rate": 1.0,
+      "mean_balancing_time_s": 0.9258333333333333,
+      "velocity_tracking_rmse_m_s": 0.10011908034577338,
+      "wheel_tracking_rmse_m_s": 0.12629064481127325
+    }
+  },
+  "results": [
+    {
+      "scenario": "balance-positive",
+      "controller": "LQR",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.03160973173802475,
+      "wheel_tracking_rmse_m_s": 0.04269144101671146,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9995500337489875,
+        -0.02999550020249566,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "balance-positive",
+      "controller": "Neural Network",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.03160855459298931,
+      "wheel_tracking_rmse_m_s": 0.04268984073713718,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9995500337489875,
+        -0.02999550020249566,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "balance-positive",
+      "controller": "Reinforcement Learning",
+      "fell": true,
+      "invalid": false,
+      "balancing_time_s": 0.6900000000000001,
+      "velocity_tracking_rmse_m_s": 0.09729050051049234,
+      "wheel_tracking_rmse_m_s": 0.12434562008772225,
+      "samples": 138,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9995500337489875,
+        -0.02999550020249566,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "balance-negative",
+      "controller": "LQR",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.0314764383445255,
+      "wheel_tracking_rmse_m_s": 0.04248205506874245,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9389500268294756,
+        0.02817695439843245,
+        0.010285391252965308,
+        0.34274351501455025,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "balance-negative",
+      "controller": "Neural Network",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.03148296610928326,
+      "wheel_tracking_rmse_m_s": 0.04248753809470934,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9389500268294756,
+        0.02817695439843245,
+        0.010285391252965308,
+        0.34274351501455025,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "balance-negative",
+      "controller": "Reinforcement Learning",
+      "fell": true,
+      "invalid": false,
+      "balancing_time_s": 1.295,
+      "velocity_tracking_rmse_m_s": 0.07863122713822061,
+      "wheel_tracking_rmse_m_s": 0.10219416464367213,
+      "samples": 259,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9389500268294756,
+        0.02817695439843245,
+        0.010285391252965308,
+        0.34274351501455025,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "forward-ramp",
+      "controller": "LQR",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.23889129335180054,
+      "wheel_tracking_rmse_m_s": 0.24023044238712635,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9998000066665778,
+        -0.01999866669333308,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "forward-ramp",
+      "controller": "Neural Network",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.2388287869464558,
+      "wheel_tracking_rmse_m_s": 0.24016793174777665,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9998000066665778,
+        -0.01999866669333308,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "forward-ramp",
+      "controller": "Reinforcement Learning",
+      "fell": true,
+      "invalid": false,
+      "balancing_time_s": 0.73,
+      "velocity_tracking_rmse_m_s": 0.12237073062053853,
+      "wheel_tracking_rmse_m_s": 0.14836511559923188,
+      "samples": 146,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9998000066665778,
+        -0.01999866669333308,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "reverse-ramp",
+      "controller": "LQR",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.23889129335180093,
+      "wheel_tracking_rmse_m_s": 0.24023044238712674,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9998000066665778,
+        0.01999866669333308,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "reverse-ramp",
+      "controller": "Neural Network",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.23721135186293077,
+      "wheel_tracking_rmse_m_s": 0.23855290416591549,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9998000066665778,
+        0.01999866669333308,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "reverse-ramp",
+      "controller": "Reinforcement Learning",
+      "fell": true,
+      "invalid": false,
+      "balancing_time_s": 1.065,
+      "velocity_tracking_rmse_m_s": 0.059289367284020324,
+      "wheel_tracking_rmse_m_s": 0.08506160384420586,
+      "samples": 213,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9998000066665778,
+        0.01999866669333308,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "forward-stop-reverse",
+      "controller": "LQR",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.19354268275605307,
+      "wheel_tracking_rmse_m_s": 0.19549036760587846,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9999500004166653,
+        -0.009999833334166664,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "forward-stop-reverse",
+      "controller": "Neural Network",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.19320467075060185,
+      "wheel_tracking_rmse_m_s": 0.19514643113394584,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9999500004166653,
+        -0.009999833334166664,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "forward-stop-reverse",
+      "controller": "Reinforcement Learning",
+      "fell": true,
+      "invalid": false,
+      "balancing_time_s": 0.785,
+      "velocity_tracking_rmse_m_s": 0.15317111811311904,
+      "wheel_tracking_rmse_m_s": 0.17910040885932435,
+      "samples": 157,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9999500004166653,
+        -0.009999833334166664,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "yaw-mixing",
+      "controller": "LQR",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.08254887297215784,
+      "wheel_tracking_rmse_m_s": 0.08371486575412052,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9209573765839082,
+        0.013815396819062707,
+        -0.005841056089276484,
+        -0.38937453356656393,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "yaw-mixing",
+      "controller": "Neural Network",
+      "fell": false,
+      "invalid": false,
+      "balancing_time_s": 8.0,
+      "velocity_tracking_rmse_m_s": 0.08260808614995696,
+      "wheel_tracking_rmse_m_s": 0.0837736275497166,
+      "samples": 1600,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9209573765839082,
+        0.013815396819062707,
+        -0.005841056089276484,
+        -0.38937453356656393,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "scenario": "yaw-mixing",
+      "controller": "Reinforcement Learning",
+      "fell": true,
+      "invalid": false,
+      "balancing_time_s": 0.99,
+      "velocity_tracking_rmse_m_s": 0.08996153840824941,
+      "wheel_tracking_rmse_m_s": 0.11867695583348305,
+      "samples": 198,
+      "initial_qpos": [
+        0.0,
+        0.0,
+        0.0,
+        0.9209573765839082,
+        0.013815396819062707,
+        -0.005841056089276484,
+        -0.38937453356656393,
+        0.0,
+        0.0
+      ],
+      "initial_qvel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0
+      ]
+    }
+  ],
+  "validation": {
+    "date": "2026-10-08",
+    "scope": "functional smoke, not converged control",
+    "balance_steps": 8192,
+    "velocity_additional_steps": 4096,
+    "legacy_tests_before_changes": 13,
+    "legacy_10_second_summary": {
+      "LQR": {
+        "balancing_time_s": 5.510999999997906,
+        "rms_pitch_deg": 6.2669367161453025,
+        "maximum_pitch_deg": 46.49748729742995,
+        "velocity_tracking_rmse_m_s": 0.5928979571586039,
+        "output_rmse_rad_s": 0.016976649904469232,
+        "falls": 6
+      },
+      "Neural Network": {
+        "balancing_time_s": 5.510999999997906,
+        "rms_pitch_deg": 6.266020646562081,
+        "maximum_pitch_deg": 46.49762183314246,
+        "velocity_tracking_rmse_m_s": 0.5927997988141925,
+        "output_rmse_rad_s": 0.017448478970006637,
+        "falls": 6
+      }
+    },
+    "final_test_count": 21,
+    "final_test_result": "PASS",
+    "gui_result": "PASS: RL GUI training/continue/stop/save/load/switch/close; 45 resets, 656 frames",
+    "legacy_summary_exactly_unchanged": true
+  }
+}

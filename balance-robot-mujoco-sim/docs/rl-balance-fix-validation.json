@@ -1,0 +1,794 @@
+{
+  "date": "2026-10-08",
+  "model": "models/robot_rl.rl.zip",
+  "backup": "models/robot_rl.before-balance-fix.rl.zip",
+  "model_sha256": "c53991a6518b95120b0bd5271978a7f41569652f40eeb2f07433cfa9eb347589",
+  "original_sha256": "0cad040006437abed28d4dd101d47ddab4bf235f73e901395a163d327b3c3b40",
+  "original_training_steps": 100352,
+  "original_training_episodes": 652,
+  "original_training_falls": 652,
+  "selected_training_steps": 501760,
+  "original_evaluation": {
+    "rl_model": "models/robot_rl.before-balance-fix.rl.zip",
+    "nn_model": "/home/haruhiko/Program/PSC_Robot/balance-robot-mujoco-sim/models/robot_nn.npz",
+    "training_steps": 100352,
+    "duration_s": 8.0,
+    "control_dt": 0.005,
+    "physics_dt": 2.5e-05,
+    "fall_threshold_rad": 0.7853981633974483,
+    "scenarios": [
+      {
+        "name": "balance-positive",
+        "pitch": 0.06,
+        "heading": 0.0,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0
+        ],
+        "yaw": 0.0,
+        "duration": 8.0,
+        "ramp": false,
+        "roll": 0.0
+      },
+      {
+        "name": "balance-negative",
+        "pitch": -0.06,
+        "heading": 0.7,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0
+        ],
+        "yaw": 0.0,
+        "duration": 8.0,
+        "ramp": false,
+        "roll": 0.0
+      },
+      {
+        "name": "forward-ramp",
+        "pitch": 0.04,
+        "heading": 0.0,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0,
+          0.3,
+          0.3
+        ],
+        "yaw": 0.0,
+        "duration": 8.0,
+        "ramp": true,
+        "roll": 0.0
+      },
+      {
+        "name": "reverse-ramp",
+        "pitch": -0.04,
+        "heading": 0.0,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0,
+          -0.3,
+          -0.3
+        ],
+        "yaw": 0.0,
+        "duration": 8.0,
+        "ramp": true,
+        "roll": 0.0
+      },
+      {
+        "name": "forward-stop-reverse",
+        "pitch": 0.02,
+        "heading": 0.0,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0,
+          0.3,
+          0.0,
+          -0.3,
+          0.0
+        ],
+        "yaw": 0.0,
+        "duration": 8.0,
+        "ramp": true,
+        "roll": 0.0
+      },
+      {
+        "name": "yaw-mixing",
+        "pitch": -0.03,
+        "heading": -0.8,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0,
+          0.15
+        ],
+        "yaw": 0.5,
+        "duration": 8.0,
+        "ramp": true,
+        "roll": 0.0
+      }
+    ],
+    "definitions": {
+      "fall": "body up-axis tilt from world Z exceeds threshold, or invalid physics",
+      "velocity": "post-step actual body forward speed (-body Y), RMSE until fall",
+      "wheel_velocity": "post-step (-left+right)*radius/2, RMSE until fall",
+      "summary": "unweighted scenario means; read error together with survival/fall rate",
+      "yaw": "manual mixing only; turning is not a learned objective"
+    },
+    "summary": {
+      "Reinforcement Learning": {
+        "falls": 6,
+        "episodes": 6,
+        "fall_rate": 1.0,
+        "mean_balancing_time_s": 0.7975,
+        "stopping_passes": 0,
+        "stopping_episodes": 2,
+        "velocity_tracking_rmse_m_s": 0.07448955857006793,
+        "wheel_tracking_rmse_m_s": 0.08584169057561773
+      }
+    },
+    "results": [
+      {
+        "scenario": "balance-positive",
+        "controller": "Reinforcement Learning",
+        "fell": true,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 0.72,
+        "velocity_tracking_rmse_m_s": 0.05677706834313103,
+        "wheel_tracking_rmse_m_s": 0.06639245191325063,
+        "samples": 144,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9995500337489875,
+          -0.02999550020249566,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "balance-negative",
+        "controller": "Reinforcement Learning",
+        "fell": true,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 0.675,
+        "velocity_tracking_rmse_m_s": 0.05421053615009295,
+        "wheel_tracking_rmse_m_s": 0.06499391314918443,
+        "samples": 135,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9389500268294756,
+          0.02817695439843245,
+          0.010285391252965308,
+          0.34274351501455025,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "forward-ramp",
+        "controller": "Reinforcement Learning",
+        "fell": true,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 0.8200000000000001,
+        "velocity_tracking_rmse_m_s": 0.08576149282230809,
+        "wheel_tracking_rmse_m_s": 0.09682093762444782,
+        "samples": 164,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9998000066665778,
+          -0.01999866669333308,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "reverse-ramp",
+        "controller": "Reinforcement Learning",
+        "fell": true,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 0.75,
+        "velocity_tracking_rmse_m_s": 0.08015846816121355,
+        "wheel_tracking_rmse_m_s": 0.09310974436827571,
+        "samples": 150,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9998000066665778,
+          0.01999866669333308,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "forward-stop-reverse",
+        "controller": "Reinforcement Learning",
+        "fell": true,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 1.02,
+        "velocity_tracking_rmse_m_s": 0.13159871881373714,
+        "wheel_tracking_rmse_m_s": 0.14149187841278532,
+        "samples": 204,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9999500004166653,
+          -0.009999833334166664,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "yaw-mixing",
+        "controller": "Reinforcement Learning",
+        "fell": true,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 0.8,
+        "velocity_tracking_rmse_m_s": 0.038431067129924765,
+        "wheel_tracking_rmse_m_s": 0.05224121798576239,
+        "samples": 160,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9209573765839082,
+          0.013815396819062707,
+          -0.005841056089276484,
+          -0.38937453356656393,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      }
+    ]
+  },
+  "selected_balance_validation": {
+    "completed": true,
+    "passed": true,
+    "episodes": 4,
+    "falls": 0,
+    "passes": 4,
+    "mean_duration_s": 60.0,
+    "episode_seconds": 60.0,
+    "criteria": {
+      "balance_tail_rms_m_s": 0.02,
+      "balance_tail_peak_m_s": 0.05,
+      "velocity_rmse_m_s": 0.08,
+      "require_no_falls": true
+    },
+    "results": [
+      {
+        "stage": "balance",
+        "seed": 10001,
+        "fell": false,
+        "invalid": false,
+        "duration_s": 60.0,
+        "tracking_rmse_m_s": 0.01743507539865389,
+        "stopping_rms_m_s": 0.017435960462619558,
+        "stopping_peak_m_s": 0.019598359001193146,
+        "passed": true
+      },
+      {
+        "stage": "balance",
+        "seed": 10002,
+        "fell": false,
+        "invalid": false,
+        "duration_s": 60.0,
+        "tracking_rmse_m_s": 0.017319154157490205,
+        "stopping_rms_m_s": 0.01745854991668233,
+        "stopping_peak_m_s": 0.01978848371066988,
+        "passed": true
+      },
+      {
+        "stage": "balance",
+        "seed": 10003,
+        "fell": false,
+        "invalid": false,
+        "duration_s": 60.0,
+        "tracking_rmse_m_s": 0.017420856936187584,
+        "stopping_rms_m_s": 0.017481804330564912,
+        "stopping_peak_m_s": 0.01987411556207943,
+        "passed": true
+      },
+      {
+        "stage": "balance",
+        "seed": 10004,
+        "fell": false,
+        "invalid": false,
+        "duration_s": 60.0,
+        "tracking_rmse_m_s": 0.017654550967077774,
+        "stopping_rms_m_s": 0.01744958109054692,
+        "stopping_peak_m_s": 0.01981775014258525,
+        "passed": true
+      }
+    ]
+  },
+  "selected_comparison": {
+    "rl_model": "models/robot_rl.rl.zip",
+    "nn_model": "/home/haruhiko/Program/PSC_Robot/balance-robot-mujoco-sim/models/robot_nn.npz",
+    "training_steps": 501760,
+    "duration_s": 12.0,
+    "control_dt": 0.005,
+    "physics_dt": 2.5e-05,
+    "fall_threshold_rad": 0.7853981633974483,
+    "scenarios": [
+      {
+        "name": "balance-positive",
+        "pitch": 0.06,
+        "heading": 0.0,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0
+        ],
+        "yaw": 0.0,
+        "duration": 12.0,
+        "ramp": false,
+        "roll": 0.0
+      },
+      {
+        "name": "balance-negative",
+        "pitch": -0.06,
+        "heading": 0.7,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0
+        ],
+        "yaw": 0.0,
+        "duration": 12.0,
+        "ramp": false,
+        "roll": 0.0
+      },
+      {
+        "name": "forward-ramp",
+        "pitch": 0.04,
+        "heading": 0.0,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0,
+          0.3,
+          0.3
+        ],
+        "yaw": 0.0,
+        "duration": 12.0,
+        "ramp": true,
+        "roll": 0.0
+      },
+      {
+        "name": "reverse-ramp",
+        "pitch": -0.04,
+        "heading": 0.0,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0,
+          -0.3,
+          -0.3
+        ],
+        "yaw": 0.0,
+        "duration": 12.0,
+        "ramp": true,
+        "roll": 0.0
+      },
+      {
+        "name": "forward-stop-reverse",
+        "pitch": 0.02,
+        "heading": 0.0,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0,
+          0.3,
+          0.0,
+          -0.3,
+          0.0
+        ],
+        "yaw": 0.0,
+        "duration": 12.0,
+        "ramp": true,
+        "roll": 0.0
+      },
+      {
+        "name": "yaw-mixing",
+        "pitch": -0.03,
+        "heading": -0.8,
+        "pitch_rate": 0.0,
+        "wheel_velocity": 0.0,
+        "targets": [
+          0.0,
+          0.15
+        ],
+        "yaw": 0.5,
+        "duration": 12.0,
+        "ramp": true,
+        "roll": 0.0
+      }
+    ],
+    "definitions": {
+      "fall": "body up-axis tilt from world Z exceeds threshold, or invalid physics",
+      "velocity": "post-step actual body forward speed (-body Y), RMSE until fall",
+      "wheel_velocity": "post-step (-left+right)*radius/2, RMSE until fall",
+      "summary": "unweighted scenario means; read error together with survival/fall rate",
+      "yaw": "manual mixing only; turning is not a learned objective"
+    },
+    "summary": {
+      "Reinforcement Learning": {
+        "falls": 0,
+        "episodes": 6,
+        "fall_rate": 0.0,
+        "mean_balancing_time_s": 12.0,
+        "stopping_passes": 0,
+        "stopping_episodes": 2,
+        "velocity_tracking_rmse_m_s": 0.14047456201961386,
+        "wheel_tracking_rmse_m_s": 0.1444119361270151
+      }
+    },
+    "results": [
+      {
+        "scenario": "balance-positive",
+        "controller": "Reinforcement Learning",
+        "fell": false,
+        "invalid": false,
+        "stopping": {
+          "speed_rms_m_s": 0.01746074336665226,
+          "speed_peak_m_s": 0.019763685964810783,
+          "travel_m": 0.10385311647367036,
+          "displacement_m": 0.10385311647367036,
+          "passed": false
+        },
+        "balancing_time_s": 12.0,
+        "velocity_tracking_rmse_m_s": 0.018893011062667518,
+        "wheel_tracking_rmse_m_s": 0.030646220181555408,
+        "samples": 2400,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9995500337489875,
+          -0.02999550020249566,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "balance-negative",
+        "controller": "Reinforcement Learning",
+        "fell": false,
+        "invalid": false,
+        "stopping": {
+          "speed_rms_m_s": 0.017361239582718523,
+          "speed_peak_m_s": 0.018508382352819746,
+          "travel_m": 0.10386814593207047,
+          "displacement_m": 0.1038647949095576,
+          "passed": false
+        },
+        "balancing_time_s": 12.0,
+        "velocity_tracking_rmse_m_s": 0.020273281674142652,
+        "wheel_tracking_rmse_m_s": 0.029829152032635947,
+        "samples": 2400,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9389500268294756,
+          0.02817695439843245,
+          0.010285391252965308,
+          0.34274351501455025,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "forward-ramp",
+        "controller": "Reinforcement Learning",
+        "fell": false,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 12.0,
+        "velocity_tracking_rmse_m_s": 0.2514854837718913,
+        "wheel_tracking_rmse_m_s": 0.2521853651526932,
+        "samples": 2400,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9998000066665778,
+          -0.01999866669333308,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "reverse-ramp",
+        "controller": "Reinforcement Learning",
+        "fell": false,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 12.0,
+        "velocity_tracking_rmse_m_s": 0.2831782845860165,
+        "wheel_tracking_rmse_m_s": 0.2836328105135065,
+        "samples": 2400,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9998000066665778,
+          0.01999866669333308,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "forward-stop-reverse",
+        "controller": "Reinforcement Learning",
+        "fell": false,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 12.0,
+        "velocity_tracking_rmse_m_s": 0.1894688213015388,
+        "wheel_tracking_rmse_m_s": 0.1898632042644765,
+        "samples": 2400,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9999500004166653,
+          -0.009999833334166664,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      },
+      {
+        "scenario": "yaw-mixing",
+        "controller": "Reinforcement Learning",
+        "fell": false,
+        "invalid": false,
+        "stopping": null,
+        "balancing_time_s": 12.0,
+        "velocity_tracking_rmse_m_s": 0.07954848972142643,
+        "wheel_tracking_rmse_m_s": 0.08031486461722319,
+        "samples": 2400,
+        "initial_qpos": [
+          0.0,
+          0.0,
+          0.0,
+          0.9209573765839082,
+          0.013815396819062707,
+          -0.005841056089276484,
+          -0.38937453356656393,
+          0.0,
+          0.0
+        ],
+        "initial_qvel": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      }
+    ]
+  },
+  "rejected_later_checkpoint": {
+    "steps": 602112,
+    "validation": {
+      "completed": true,
+      "passed": false,
+      "episodes": 4,
+      "falls": 4,
+      "passes": 0,
+      "mean_duration_s": 17.82875,
+      "episode_seconds": 60.0,
+      "criteria": {
+        "balance_tail_rms_m_s": 0.02,
+        "balance_tail_peak_m_s": 0.05,
+        "velocity_rmse_m_s": 0.08,
+        "require_no_falls": true
+      },
+      "results": [
+        {
+          "stage": "balance",
+          "seed": 10001,
+          "fell": true,
+          "invalid": false,
+          "duration_s": 17.945,
+          "tracking_rmse_m_s": 0.07901200728603945,
+          "stopping_rms_m_s": 0.11054783828055206,
+          "stopping_peak_m_s": 0.2642321011553605,
+          "passed": false
+        },
+        {
+          "stage": "balance",
+          "seed": 10002,
+          "fell": true,
+          "invalid": false,
+          "duration_s": 14.815,
+          "tracking_rmse_m_s": 0.0867637945755918,
+          "stopping_rms_m_s": 0.12038474485265388,
+          "stopping_peak_m_s": 0.264226486289179,
+          "passed": false
+        },
+        {
+          "stage": "balance",
+          "seed": 10003,
+          "fell": true,
+          "invalid": false,
+          "duration_s": 17.45,
+          "tracking_rmse_m_s": 0.07986327984056539,
+          "stopping_rms_m_s": 0.11174405900749923,
+          "stopping_peak_m_s": 0.2642167328662652,
+          "passed": false
+        },
+        {
+          "stage": "balance",
+          "seed": 10004,
+          "fell": true,
+          "invalid": false,
+          "duration_s": 21.105,
+          "tracking_rmse_m_s": 0.07393405686088113,
+          "stopping_rms_m_s": 0.10265668265864204,
+          "stopping_peak_m_s": 0.2642187401526474,
+          "passed": false
+        }
+      ]
+    }
+  },
+  "tests": {
+    "total": 35,
+    "result": "PASS",
+    "full_suite_before_last_regression": 34,
+    "final_rl_subset": 17
+  },
+  "limitations": [
+    "Balance-stage policy only; driving and yaw were not trained.",
+    "Residual forward speed is about 0.0175 m/s; this is not position holding.",
+    "The stricter displacement-based stopping check in evaluate_rl.py still fails.",
+    "Finite seeded rollouts are not a guarantee for arbitrary starting states."
+  ]
+}

@@ -1,0 +1,4 @@
+# Optional; original LQR/exported supervised NN can run without these.
+stable-baselines3>=2.4,<3
+gymnasium>=1.0,<2
+torch>=2.5,<3

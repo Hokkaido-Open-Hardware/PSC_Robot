@@ -1,0 +1,10 @@
+WARNING Sun Oct  4 04:39:45 2026: Inertia matrix is too close to singular at DOF 5. Check model. Time = 0.0001.
+
+WARNING Sun Oct  4 07:36:55 2026: Inertia matrix is too close to singular at DOF 5. Check model. Time = 0.0000.
+
+WARNING Sun Oct  4 07:36:55 2026: Nan, Inf or huge value in QVEL at DOF 2. The simulation is unstable. Time = 0.0000.
+
+WARNING Sun Oct  4 07:37:26 2026: Inertia matrix is too close to singular at DOF 5. Check model. Time = 0.0000.
+
+WARNING Sun Oct  4 07:37:26 2026: Nan, Inf or huge value in QVEL at DOF 2. The simulation is unstable. Time = 0.0000.
+

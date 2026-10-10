@@ -1,0 +1,2 @@
+# Optional for training; LQR and exported NN inference only need the base environment.
+torch>=2.5,<3
