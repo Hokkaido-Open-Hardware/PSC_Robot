@@ -328,6 +328,9 @@ class Window(QMainWindow):
         self.i2c_dump = I2CDumpPanel(self)
         sidebar_layout.addWidget(self.i2c_dump)
         sidebar_layout.addWidget(self.create_control_status())
+        from psc_recording import RecordingPanel
+        self.recording = RecordingPanel(self)
+        sidebar_layout.addWidget(self.recording)
         self.psc_panel = None
         self.psc_worker = None
         if not psc_child:
@@ -434,10 +437,13 @@ class Window(QMainWindow):
             label.setText(f"{0.0 if value == 0 else value:.{digits}f}")
         auto = self.th.auto_status
         if auto.enabled:
+            stopped_hint = (
+                '\nHolding zero Speed / Yaw; next: Gentle Forward.'
+                if auto.scenario == 'Stopped' else '')
             self.auto_status_label.setText(
                 f'AUTO • Episode {auto.episode} • {auto.scenario} • '
-                f'{auto.elapsed:.1f} / {DEFAULT_DURATION:g} s • Falls {auto.falls}\n'
-                f'Speed {auto.speed:+.3f} m/s • Yaw {auto.yaw:+.3f} rad/s')
+                f'{auto.elapsed:.3f} / {DEFAULT_DURATION:g} s (simulation time) • Falls {auto.falls}\n'
+                f'Speed {auto.speed:+.3f} m/s • Yaw {auto.yaw:+.3f} rad/s{stopped_hint}')
             self._display_commands(auto.speed, auto.yaw)
         else:
             self.auto_status_label.setText('MANUAL • Adjust Speed / Yaw')
@@ -471,7 +477,9 @@ class Window(QMainWindow):
         self.command_mode = QComboBox()
         self.command_mode.addItems(['MANUAL', 'AUTO'])
         self.command_mode.setToolTip(
-            'AUTO cycles driving commands and resets after a fall or 8 seconds. '
+            'AUTO starts with zero Speed / Yaw for 8 seconds of simulation time, '
+            'then cycles driving commands and resets after a fall or 8 simulation seconds. '
+            'PSC-ONE may take much longer in real time. '
             'Use the training tabs to train models with their own automatic commands.')
         self.command_mode.currentTextChanged.connect(self.change_command_mode)
         controller_layout.addWidget(self.command_mode)
@@ -586,8 +594,10 @@ class Window(QMainWindow):
     def closeEvent(self, event):
         if self.psc_worker is not None:
             self.psc_worker.stop()
+            self.recording.save_capture(self.psc_worker.capture)
         if self.psc_panel is not None:
             self.psc_panel.shutdown()
+        self.recording.finish_export()
         self.status_timer.stop()
         self.viewport.timer.stop()
         self.th.stop()

@@ -92,8 +92,10 @@ class PSCPanel(QGroupBox):
             return
         if window.psc_worker is not None:
             window.psc_worker.stop()
+            window.recording.save_capture(window.psc_worker.capture)
             window.psc_worker.deleteLater()
             window.psc_worker = None
+            window.recording.release()
         if self.local_robot is not None:
             window.th.robot = self.local_robot
             self.local_robot = None
@@ -159,6 +161,8 @@ class PSCPanel(QGroupBox):
 
 class PSCThread(QThread):
     stateChanged = Signal(str)
+    recordingProgress = Signal(object, float)
+    recordingReady = Signal(object)
 
     def __init__(self, window, link, steps):
         super().__init__(window)
@@ -176,11 +180,17 @@ class PSCThread(QThread):
         # The remote CPU owns balance control. Commands and reset stay interactive.
         for widget in (window.controller_selector, window.training_tabs):
             widget.setEnabled(False)
+        self.capture = window.recording.begin(window.model)
+        self.recordingProgress.connect(window.recording.progress)
+        self.recordingReady.connect(window.recording.save_capture)
 
     def run(self):
         started = time.monotonic()
         completed = 0
         try:
+            if self.capture is not None:
+                with self.window.data_lock:
+                    self.capture.sample(self.window.data)
             for _ in range(self.steps):
                 if not self.running:
                     break
@@ -204,6 +214,12 @@ class PSCThread(QThread):
                     commands.physics_steps += self.plant.substeps
                     completed += 1
                     elapsed = self.window.data.time
+                    if self.capture is not None and not self.capture.complete:
+                        self.capture.sample(self.window.data, advanced=True)
+                        if self.capture.ticks % 20 == 0:
+                            self.recordingProgress.emit(self.capture, self.capture.elapsed)
+                        if self.capture.complete:
+                            self.recordingReady.emit(self.capture)
                 rate = completed * .005 / max(time.monotonic() - started, .001)
                 self.stateChanged.emit(f'PSC-OS connected • t={elapsed:.3f}s • {rate:.3f}× real time')
         except Exception as exc:
@@ -215,6 +231,8 @@ class PSCThread(QThread):
             with self.window.data_lock:
                 self.window.data.ctrl[:] = 0
             self.link.close()
+            if self.capture is not None:
+                self.recordingReady.emit(self.capture)
 
     def stop(self):
         self.running = False

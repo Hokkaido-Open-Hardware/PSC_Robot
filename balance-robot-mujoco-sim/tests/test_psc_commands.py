@@ -10,8 +10,9 @@ os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src/simulation'))
 from PySide6.QtWidgets import QApplication
 from auto_commands import DEFAULT_DURATION
+from control_timing import CONTROL_DT
 from psc_panel import PSCThread
-from psc_protocol import quantize
+from psc_protocol import INPUT_SCALES, OUTPUT_SCALE, quantize
 from robot_lqr import RobotLqr
 from simulate_robot import Window
 
@@ -80,6 +81,39 @@ class PSCCommandTests(unittest.TestCase):
         self.assertTrue(w.speed_slider.isEnabled())
         self.assertTrue(w.yaw_slider.isEnabled())
         self.assertEqual((w.th.speed, w.th.yaw), (0, 0))
+
+    def test_auto_stopped_explains_wait_and_reaches_forward_without_clock_jump(self):
+        w = self.window
+        frames = []
+
+        def reply(values):
+            # Host reference for the remote balance output; exercise real
+            # MuJoCo steps and wire quantization without running the RTL CPU.
+            frame = quantize(values)
+            frames.append(frame)
+            pitch, rate, wheel, target = [v * s for v, s in zip(frame, INPUT_SCALES)]
+            output = (-2.1402165848237837 * pitch + .03501370844016172 * rate
+                      + 2.236067977499789 * (.034 * wheel - target)) / .034
+            return max(-128, min(127, round(output / OUTPUT_SCALE))) * OUTPUT_SCALE
+
+        w.command_mode.setCurrentText('AUTO')
+        self.assertIn('simulation time', w.auto_status_label.text())
+        self.assertIn('Holding zero Speed / Yaw', w.auto_status_label.text())
+        stopped_ticks = round(DEFAULT_DURATION / CONTROL_DT)
+        self.worker.steps = stopped_ticks + 4
+        with patch.object(self.link, 'exchange', side_effect=reply), patch.object(
+                RobotLqr, 'calculate_lqr_velocity', side_effect=AssertionError('local control')):
+            self.worker.run()
+        self.assertFalse(self.worker.failed)
+        self.assertEqual(len(frames), stopped_ticks + 4)
+        self.assertTrue(all(frame[3] == 0 for frame in frames[:stopped_ticks]))
+        self.assertGreater(frames[-1][3], 0)
+        self.assertEqual(w.th.auto_status.scenario, 'Gentle Forward')
+        self.assertEqual(w.th.auto_status.falls, 0)
+        self.assertAlmostEqual(w.th.auto_status.elapsed, 4 * CONTROL_DT)
+        w.update_control_status()
+        self.assertIn('0.020 / 8 s', w.auto_status_label.text())
+        self.assertNotIn('Holding zero Speed / Yaw', w.auto_status_label.text())
 
     def test_reset_or_mode_change_discards_pending_response(self):
         w = self.window
