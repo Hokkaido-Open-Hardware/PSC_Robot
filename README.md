@@ -54,3 +54,175 @@ See the simulator documentation in [English](balance-robot-mujoco-sim/README.md)
 ## License
 
 [MIT](LICENSE). See the included projects for their respective license terms.
+
+## PSC-ONE 統合シミュレーション
+
+cocotbを起点にMuJoCo子プロセスを起動し、PSC-OSがI2Cで受け取った状態から
+計算した車輪速度でロボットを動かします。既存のLQR・NN・RL単独起動に加え、
+GUI右側の **PSC-ONE integration** から独立した連携ウィンドウを起動・停止できます。
+初期実装は目標速度0、yaw 0の倒立制御です。連携ウィンドウではローカル制御への
+切替・リセット・学習操作を無効にし、終了後は親ウィンドウの単独動作を続けられます。
+
+### 配置と関連コード
+
+`external/PSC-ONE` の既存submodule（`a28fcadf14b825c6d8c2a36b1407b0509e3e4711`、
+`v0.9.9.1`）を利用します。`.gitmodules` のURLは
+`https://github.com/Hokkaido-Open-Hardware/PSC-ONE.git` です。
+調査時点でPSC_Robotと配置済みPSC-ONEの双方に `AGENTS.md` はありません。
+PSC-ONE側のソフトウェア変更もsubmodule内の変更として管理してください。
+親リポジトリの変更だけを保存しても、そのソフトウェア変更は含まれません。
+
+| ファイル | 役割 |
+| --- | --- |
+| `external/PSC-ONE/hardware/sim/cocotb_tb/mmio/psc_rv32_i2c.py` | 既存I2C単体テストと再利用するPythonマスター |
+| `external/PSC-ONE/software/os/src/api/i2c_api.{c,h}` | 既存MMIO API。入力4バイト、出力1バイト、W1C状態、8bit連番 |
+| `external/PSC-ONE/software/os/src/api/robot/robot_control.{c,h}` | 追加した固定小数点LQRサービス。CPUが計算し、NPUは使用しない |
+| `external/PSC-ONE/software/os/src/kernel/kernel.c` | `PSC_ROBOT_SIM` 専用ビルドで初期化後にサービスを起動 |
+| `integration/psc_one/Makefile` | 既存PSC-OS/SoCソース一覧を使い、専用領域へビルド |
+| `integration/psc_one/cosim.py` | 起動確認、I2C変換、時間同期、ロボット子プロセス管理 |
+| `integration/psc_one/robot_cosim.sv` | 製品RTLを変更しないテスト専用の信号アダプター |
+| `integration/psc_one/boot.S` | 配置済みsubmoduleに欠けているBootROMソースを補うテスト専用起動コード |
+| `integration/psc_one/run.py` | ビルド・実行の監督、タイムアウト、プロセスグループ回収 |
+| `balance-robot-mujoco-sim/src/simulation/psc_protocol.py` | サイズ制限・バージョン・連番を持つUnixソケットIPC |
+| `balance-robot-mujoco-sim/src/simulation/psc_worker.py` | MuJoCo状態取得、返信した車輪速度の適用、物理ステップ |
+| `balance-robot-mujoco-sim/src/simulation/psc_panel.py` | GUIの起動・停止と通信専用スレッド |
+
+通常OSの `robot_control` シェルコマンドは元から未実装です。今回のサービスは
+専用ビルドのカーネル内でポーリング実行し、シェルやユーザープロセスを起動しません。
+通常OSビルドの起動経路は変更していません。
+
+### 現在のハードウェア制約
+
+配置済みソースには外部I2C経路の配線問題があります。
+
+- `hardware/rtl/tang20k/top/PSC_ONE_Chip.v` はSoCのSCLを
+  `lv_drive_low[2]` に接続しており、外部ピンの入力を使用していません。
+- `hardware/rtl/soc/soc_top/PSC_ONE_SOC.v` のSDAが `output` 宣言です。
+  スレーブの入力にも使われますが、上位側でも `lv_drive_low[3]` に接続されています。
+- `PSC_ONE_Chip_sim.v` はLV1/LV2に接続する一方、SoC側はインデックス2/3を使います。
+
+このため、専用アダプターは既存 `u_i2c.scl_i/sda_i` のみをforceし、SDAを
+`~(master_sda_low | slave_sda_low)` で解決します。CPU、キャッシュ、MMIO、I2Cスレーブの
+処理は実RTLを通り、PythonがMMIO入力や制御出力を注入することはありません。
+**これは基板・チップ外部ピン経由の動作確認にはなりません。** 製品RTLは変更していません。
+
+実機経路の修正案は、基板の実際のLVピン割当を確認してSCLを `lv_input` に接続し、
+SDAをSoCの `inout`、または入力とdrive-low出力に分離し、ピン境界で一度だけ
+open-drainを解決することです。シミュレーション上位のLV割当も同じピンに揃える必要があります。
+CPU・NPU・I2Cレジスタ仕様の変更は不要です。この製品RTL修正は今回適用していません。
+
+また、既存OS Makefileが要求する `src/boot/psc_mbios.S` がsubmoduleにありません。
+`boot.S` はS-modeの既存カーネルentryへ移る専用fixtureで、SBI・割込み・warm restart・
+通常シェルは検証対象外です。既存OSを単独ビルドできるようにする修復は含めていません。
+
+### プロトコルと同期
+
+ロボットプロセスが論理的なI2Cマスターです。Unixソケットの状態要求をcocotbが代理して
+スレーブアドレス `0x42` のSCL/SDA信号に変換します。レジスタ0から4バイトを書き、
+レジスタ4のOUTPUT_READYを待ち、8の出力と9のSEQを読みます。
+起動時はPSC-OSが `OUTPUT_READY=1, OUTPUT=0, SEQ=0` を設定して受付準備を通知し、
+既知入力 `[10,0,0,0]` に対する出力 `-10` を確認してからロボットを起動します。
+
+| 入力順 | 内容 | 1 LSB |
+| --- | --- | --- |
+| 0 | 既存LQRと同じ符号のpitch | 0.004 rad |
+| 1 | 既存LQRと同じフィルターのpitch rate | 0.04 rad/s |
+| 2 | 既存LQRと同じフィルターの平均車輪角速度 | 0.5 rad/s |
+| 3 | 目標並進速度（初期モードは0） | 0.004 m/s |
+| 出力 | 共通車輪角速度 | 0.25 rad/s |
+
+すべてzero point 0の符号付きINT8で、最近傍丸め（ちょうど半分はゼロから遠い方）と
+`[-128,127]` 飽和を適用します。出力範囲は `[-32,31.75] rad/s` です。
+このwire形式は既存NNの量子化形式とは異なります。
+PSC-OSは既存LQR式に対応したQ16係数で計算し、左車輪に `-output`、右に `output` を適用します。
+Pythonはフィルター・量子化・モーター符号変換を担当し、ローカルLQRの制御計算は呼びません。
+
+制御周期は5ms、MuJoCoの物理刻みは25µs（200ステップ）です。
+1周期につき状態を1回送信し、返信までは物理を進めません。
+cocotbはI2C要求・OS処理・返信を5msのRTL時間内で行い、残り時間を進めてから返信します。
+その出力を同じ論理周期のMuJoCoの200ステップに一定値として適用します。
+これは離散時間の同期モデルであり、I2C遅延を物理系内の追加遅延として再現する方式ではありません。
+OSブート時間はロボット時間に含めません。
+
+IPC待ちの間はRTL時間も止まります。壁時計の速さやGUIの描画速度による追いつき・
+周期の間引きはありません。IPCの非負整数のPython連番と論理時刻、I2Cの8bit連番を照合し、
+連番周回はI2C側のみmod 256で扱います。未処理入力がある間の次フレーム送信は禁止です。
+
+起動応答はRTL時間2秒、各制御応答はRTL時間5ms、子プロセス接続は壁時計60秒、
+IPC待ちは壁時計120秒で打ち切ります。全体はCLIの `--timeout` で制限します。
+NACK、overrun、連番不一致、NaN/Inf、切断はエラーで終了し、別コントローラーには切り替えません。
+GUIのIPC待ちは描画ロックの外で行い、終了時にソケットshutdownで解除します。
+監督プロセスはSIGINT/SIGTERMでmake・シミュレーター・MuJoCoのプロセスグループを
+TERM→KILLで回収し、Linuxではsubreaperで孤児化した孫プロセスもwaitします。
+同時起動はファイルロックで拒否し、通常のPSC-ONEビルド出力をcleanしません。
+
+### 実行
+
+Linux、MuJoCo/PySide6/SciPy/NumPyを含む既存ロボット環境、cocotb 2.0、Verilator、
+Clang、LLVM objcopy、RV32IM用libgcc、make、hexdumpが必要です。
+I2C単体テストはIcarusも使用します。cocotbとMuJoCoは別Python環境でも構いません。
+
+```bash
+# 同じ環境にcocotbも導入する場合
+myenv/bin/python -m pip install -r integration/psc_one/requirements.txt
+
+# ヘッドレス統合実行。全体の壁時計タイムアウトにはビルド時間も含む
+myenv/bin/python integration/psc_one/run.py --steps 20 --timeout 1800
+
+# cocotbが別環境の場合
+myenv/bin/python integration/psc_one/run.py --steps 20 \
+  --sim-python /path/to/cocotb-env/bin/python
+
+# 通常GUIから右側パネルのcocotb Pythonを設定してStart / Stop
+myenv/bin/python balance-robot-mujoco-sim/src/simulation/simulate_robot.py
+
+# cocotb起点で連携GUIを直接開く
+myenv/bin/python integration/psc_one/run.py --gui --steps 1000000 \
+  --timeout 86400 --sim-python /path/to/cocotb-env/bin/python
+```
+
+ビルド、実行ログ、cocotb XML結果は `build/psc-one/` に出力されます。
+実機速度での実行は想定していません。最初の確認ではブート込み3周期に約161秒かかりました。
+GUIのStopは子ウィンドウも終了し、再起動時にはOS・ロボットの状態を初期化します。
+
+通常GUI・PSC-ONE連携GUIの右側上部に `PSC-ONE I2C dump` を表示します。
+初期ウィンドウサイズは1536×1080（従来の縦横1.2倍）です。
+実際のI2C通信をRTL時刻、7bitアドレス、レジスタ、送受信バイト（16進）、
+START/STOP、ACK/NACK付きで確認できます。TXはmaster→PSC-ONE、RXは逆方向です。
+読み出し最終バイトのNACKは正常な終了通知です。起動時のstatusポーリングも含めて
+`build/psc-one/i2c.log` に保存し、GUIには最新2000行を表示します。
+`Auto-scroll` を外すと過去の通信を確認でき、`Clear` は表示だけを消去します。
+再起動するとログと表示が新しい実行に切り替わります。
+
+```bash
+# IPC・ファームウェア計算・MuJoCo子プロセス・終了処理
+myenv/bin/python -m unittest discover -s balance-robot-mujoco-sim/tests \
+  -p test_psc_integration.py -v
+
+# 元からあるI2C単体テスト。cocotbの仮想環境を有効にして実行
+cd external/PSC-ONE/hardware/sim
+make -f ../../../../integration/psc_one/Makefile i2c-tests
+```
+
+### 検証範囲
+
+2026-10-11時点：既存I2C単体3件、追加ホストテスト7件、既存リセット4件、既存AUTOモード5件が通過。
+NNの基本制御3件も通過しました。NN学習・精度比較2件はPyTorch未導入のため実行できていません。
+実CPU上のPSC-OSサービスによる既知入力への返信と、MuJoCoの20周期（100ms）の統合テストが通過しました。実行時間はブート込み約236秒です。
+GUIからの起動・実際のI2C制御開始・停止・再起動・起動途中の停止も通過しました。
+
+GUI検証の再実行（デスクトップが必要）：
+
+```bash
+myenv/bin/python balance-robot-mujoco-sim/tests/gui_psc_smoke.py \
+  /path/to/cocotb-env/bin/python
+```
+
+実機外部ピン、通常PSC-OSシェル、NPU推論、長時間倒立安定性、実時間性能は未検証です。
+
+今回のPSC-OS追加処理は `~/Program/PSC_RV32I/PSC-ONE/software/os/` にも反映済みです。
+反映先にはシェルのI2C受信表示が既にあるため、その実装を保持し、
+`src/api/robot/robot_control.c`、同 `.h`、`src/kernel/kernel.c` の3ファイルに追加しました。
+反映先Makefileのソース登録・ヘッダー依存関係は既存設定を使用します。
+反映先は `SIM_USER=minimal` で通常カーネルと `PSC_ROBOT_SIM` 専用イメージのビルドを確認済みです。
+そのツリーを使ったRTL実行は未検証で、上記20周期の結果は `external/PSC-ONE` 構成のものです。

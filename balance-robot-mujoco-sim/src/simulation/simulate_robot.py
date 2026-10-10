@@ -280,7 +280,7 @@ class UpdateSimThread(QThread):
 
 class Window(QMainWindow):
 
-    def __init__(self) -> None:
+    def __init__(self, psc_child=False) -> None:
         super().__init__()
 
         self.nn_predictor = None
@@ -303,6 +303,7 @@ class Window(QMainWindow):
         layout_top = QHBoxLayout()
         layout_top.setSpacing(8)
         reset_button = QPushButton("Reset")
+        self.reset_button = reset_button
         reset_button.setMinimumWidth(90)
         reset_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
         reset_button.clicked.connect(self.reset_simulation)
@@ -316,7 +317,16 @@ class Window(QMainWindow):
         layout_view.addWidget(QWidget.createWindowContainer(self.viewport), 1)
         sidebar = QWidget()
         sidebar_layout = QVBoxLayout(sidebar)
+        from psc_dump import I2CDumpPanel
+        self.i2c_dump = I2CDumpPanel(self)
+        sidebar_layout.addWidget(self.i2c_dump)
         sidebar_layout.addWidget(self.create_control_status())
+        self.psc_panel = None
+        self.psc_worker = None
+        if not psc_child:
+            from psc_panel import PSCPanel
+            self.psc_panel = PSCPanel(self)
+            sidebar_layout.addWidget(self.psc_panel)
         self.training_panel = TrainingPanel()
         self.training_panel.modelReady.connect(self.install_nn_model)
         self.rl_panel = RLPanel()
@@ -337,7 +347,7 @@ class Window(QMainWindow):
         w = QWidget()
         w.setLayout(layout)
         self.setCentralWidget(w)
-        self.resize(1280, 900)
+        self.resize(1536, 1080)
 
         self.th = UpdateSimThread(self.model, self.data, self, data_lock=self.data_lock)
         if DEFAULT_MODEL.exists():
@@ -358,7 +368,8 @@ class Window(QMainWindow):
         self.status_timer.timeout.connect(self.update_control_status)
         self.update_control_status()
         self.status_timer.start()
-        self.th.start()
+        if not psc_child:
+            self.th.start()
 
     def create_control_status(self):
         panel = QGroupBox("Control Status")
@@ -566,6 +577,10 @@ class Window(QMainWindow):
             self.update_speed_range()
 
     def closeEvent(self, event):
+        if self.psc_worker is not None:
+            self.psc_worker.stop()
+        if self.psc_panel is not None:
+            self.psc_panel.shutdown()
         self.status_timer.stop()
         self.viewport.timer.stop()
         self.th.stop()
