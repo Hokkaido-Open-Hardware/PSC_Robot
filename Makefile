@@ -1,9 +1,27 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help clean
+PSC_ONE_SOURCE ?= $(HOME)/Program/PSC_RV32I/PSC-ONE
+
+.PHONY: help clean sync-psc-os
 
 help:
 	@echo "make clean  Remove Python bytecode and pytest/mypy/ruff caches"
+	@echo "make sync-psc-os  Copy PSC-OS sources from $(PSC_ONE_SOURCE)"
+
+git_update:
+	git -C external/PSC-ONE fetch origin
+	git -C external/PSC-ONE switch --detach origin/main
+
+# Use checksums because the local source can have older timestamps than checkout.
+# Keep destination-only files and Git metadata; do not copy generated outputs.
+sync-psc-os:
+	@test -f "$(PSC_ONE_SOURCE)/software/os/Makefile"
+	@test -f external/PSC-ONE/.git
+	rsync -rc --itemize-changes \
+		--exclude='.git' --exclude='build/' --exclude='__pycache__/' \
+		--exclude='*.pyc' --exclude='*.o' --exclude='*.elf' \
+		--exclude='*.bin' --exclude='*.mem' --exclude='*.map' \
+		"$(PSC_ONE_SOURCE)/software/os/" external/PSC-ONE/software/os/
 
 # Keep environments, external sources, build outputs and repository metadata.
 # pyvenv.cfg also protects virtual environments with custom directory names.

@@ -15,6 +15,15 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def forward_log(log):
+    """Drain the file incrementally so builds stay visible on the terminal."""
+    chunk = log.read(65536)
+    if chunk:
+        sys.stdout.write(chunk)
+        sys.stdout.flush()
+    return bool(chunk)
+
+
 def stop_group(process):
     # The make leader may already have exited while grandchildren remain.
     for sig, grace in ((signal.SIGTERM, 3), (signal.SIGKILL, 3)):
@@ -42,10 +51,17 @@ def stop_group(process):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--steps', type=int, default=20)
-    parser.add_argument('--gui', action='store_true')
+    display = parser.add_mutually_exclusive_group()
+    display.add_argument('--gui', action='store_true')
+    display.add_argument('--external-robot', action='store_true',
+                         help='connect the existing GUI to the simulator socket')
+    parser.add_argument('--timing', choices=('strict', 'interactive'), default=None,
+                        help='strict: full 5ms RTL ticks; interactive: omit idle padding (GUI default)')
     parser.add_argument('--timeout', type=float, default=1800, help='whole run wall seconds, including build')
     parser.add_argument('--sim-python', default=os.getenv('PSC_COCOTB_PYTHON', sys.executable))
     parser.add_argument('--robot-python', default=sys.executable)
+    parser.add_argument('--out', type=Path, default=ROOT / 'build/psc-one',
+                        help='isolated build/log directory')
     args = parser.parse_args()
     if args.steps < 1 or not 0 < args.timeout < float('inf'):
         parser.error('steps and timeout must be positive and finite')
@@ -53,7 +69,7 @@ def main():
     cocotb_config = sim_python.parent / 'cocotb-config'
     if not cocotb_config.is_file():
         parser.error('cocotb-config missing beside --sim-python; install integration/psc_one/requirements.txt there')
-    out = ROOT / 'build/psc-one'
+    out = args.out.absolute()
     out.mkdir(parents=True, exist_ok=True)
     # Avoid simultaneous GUI/CLI builds, shared memory images and result files.
     with (out / 'run.lock').open('w') as lock:
@@ -71,7 +87,9 @@ def main():
                 raise OSError('Cannot enable child reaping')
         env = dict(os.environ, PSC_ROBOT_STEPS=str(args.steps),
                    PSC_I2C_TRACE=str(trace),
+                   PSC_ROBOT_TIMING=args.timing or ('interactive' if args.gui else 'strict'),
                    PSC_ROBOT_GUI=str(int(args.gui)),
+                   PSC_ROBOT_EXTERNAL=str(int(args.external_robot)),
                    PSC_ROBOT_PYTHON=str(Path(shutil.which(args.robot_python) or args.robot_python).absolute()),
                    PYTHON_BIN=str(sim_python),
                    PATH=str(sim_python.parent) + os.pathsep + os.environ.get('PATH', ''))
@@ -88,13 +106,17 @@ def main():
         command = ['make', '-f', str(Path(__file__).with_name('Makefile')), 'cosim',
                    'SIM_FAST=1', f'OUT={out}']
         print('PSC-ONE: simulation-only pin adapter; log: ' + str(out / 'run.log'), flush=True)
-        with (out / 'run.log').open('w') as log:
+        with (out / 'run.log').open('w') as log, (out / 'run.log').open(
+                encoding='utf-8', errors='replace') as live_log:
             child = subprocess.Popen(command, cwd=ROOT / 'external/PSC-ONE/hardware/sim',
                                      env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             try:
                 end = time.monotonic() + args.timeout
                 while child.poll() is None and not stopped and time.monotonic() < end:
+                    forward_log(live_log)
                     time.sleep(.1)
+                while forward_log(live_log):
+                    pass
                 if stopped:
                     print('PSC-ONE stopped', flush=True)
                     return 130
@@ -110,6 +132,8 @@ def main():
                 return 0
             finally:
                 stop_group(child)
+                while forward_log(live_log):
+                    pass
 
 
 if __name__ == '__main__':

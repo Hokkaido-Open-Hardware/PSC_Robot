@@ -135,6 +135,7 @@ class UpdateSimThread(QThread):
         self.auto_falls = 0
         self.auto_commands = None
         self.auto_rng = np.random.default_rng(42)
+        self.command_epoch = 0
 
         # Initialize physics, controller state, and the simulation clock together.
         self.reset()
@@ -171,24 +172,28 @@ class UpdateSimThread(QThread):
     def _step_locked(self):
         """Advance one physics step; caller holds the simulation/render lock."""
         if self.physics_steps % self.control_substeps == 0:
-            if self.auto_enabled:
-                tilt = body_tilt(self.data)
-                fell = invalid_physics(self.data) or not math.isfinite(tilt) or tilt > math.pi / 4
-                elapsed = self.physics_steps * self.model.opt.timestep
-                if fell or self.physics_steps >= round(DEFAULT_DURATION / CONTROL_DT) * self.control_substeps:
-                    self.auto_falls += int(fell)
-                    self.auto_episode += 1
-                    self._reset_locked()
-                    elapsed = 0.0
-                self.speed, self.yaw = self.auto_commands.step(elapsed, CONTROL_DT)
-                if isinstance(self.robot, RobotRL):
-                    self.speed = float(np.clip(self.speed, -self.robot.config.target_limit,
-                                               self.robot.config.target_limit))
+            self._prepare_commands_locked()
             self.robot.set_velocity_linear_set_point(self.speed)
             self.robot.set_yaw(self.yaw)
             self.robot.update_motor_speed()
         mujoco.mj_step(self.model, self.data)
         self.physics_steps += 1
+
+    def _prepare_commands_locked(self):
+        """Update the command schedule once per local or remote control tick."""
+        if self.auto_enabled:
+            tilt = body_tilt(self.data)
+            fell = invalid_physics(self.data) or not math.isfinite(tilt) or tilt > math.pi / 4
+            elapsed = self.physics_steps * self.model.opt.timestep
+            if fell or self.physics_steps >= round(DEFAULT_DURATION / CONTROL_DT) * self.control_substeps:
+                self.auto_falls += int(fell)
+                self.auto_episode += 1
+                self._reset_locked()
+                elapsed = 0.0
+            self.speed, self.yaw = self.auto_commands.step(elapsed, CONTROL_DT)
+            if isinstance(self.robot, RobotRL):
+                self.speed = float(np.clip(self.speed, -self.robot.config.target_limit,
+                                           self.robot.config.target_limit))
 
     def stop(self):
         self.running = False
@@ -208,6 +213,7 @@ class UpdateSimThread(QThread):
         self.auto_rng = np.random.default_rng(42)
 
     def _reset_locked(self):
+        self.command_epoch += 1
         mujoco.mj_resetData(self.model, self.data)
         self.speed = 0.0
         self.yaw = 0.0
@@ -227,6 +233,7 @@ class UpdateSimThread(QThread):
         with self.data_lock:
             if self.auto_enabled == bool(enabled):
                 return
+            self.command_epoch += 1
             self.auto_enabled = bool(enabled)
             self.speed = self.yaw = 0.0
             if self.auto_enabled:
@@ -547,7 +554,7 @@ class Window(QMainWindow):
     def install_nn_model(self, predictor):
         self.nn_predictor = predictor
         self.controller_selector.model().item(1).setEnabled(True)
-        if self.controller_selector.currentText() == 'Neural Network':
+        if self.psc_worker is None and self.controller_selector.currentText() == 'Neural Network':
             self.th.set_controller('Neural Network', predictor)
 
     def change_controller(self, name):
@@ -572,7 +579,7 @@ class Window(QMainWindow):
     def install_rl_model(self, predictor):
         self.rl_predictor = predictor
         self.controller_selector.model().item(2).setEnabled(True)
-        if self.controller_selector.currentText() == 'Reinforcement Learning':
+        if self.psc_worker is None and self.controller_selector.currentText() == 'Reinforcement Learning':
             self.th.set_controller('Reinforcement Learning', predictor)
             self.update_speed_range()
 

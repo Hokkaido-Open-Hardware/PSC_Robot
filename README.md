@@ -70,9 +70,15 @@ See the simulator documentation in [English](balance-robot-mujoco-sim/README.md)
 
 cocotbを起点にMuJoCo子プロセスを起動し、PSC-OSがI2Cで受け取った状態から
 計算した車輪速度でロボットを動かします。既存のLQR・NN・RL単独起動に加え、
-GUI右側の **PSC-ONE integration** から独立した連携ウィンドウを起動・停止できます。
-初期実装は目標速度0、yaw 0の倒立制御です。連携ウィンドウではローカル制御への
-切替・リセット・学習操作を無効にし、終了後は親ウィンドウの単独動作を続けられます。
+GUI右側の **PSC-ONE integration** から連携を起動・停止できます。
+PSC-OSのブート完了後、同じウィンドウ内のロボットをPSC-OS制御へ切り替えます。
+連携終了時は元のコントローラーへ戻してリセットします。
+連携ウィンドウではSpeed・Yaw・MANUAL/AUTO・Resetを操作できます。
+ローカル制御への切替・学習操作は無効です。終了後は親ウィンドウの単独動作を続けられます。
+SpeedはI2CのINT8形式に合わせて−0.512〜+0.508 m/sです。Yawはロボット側で
+PSC-OSの出力に加算します。AUTOは通常GUIと同じシナリオを物理時刻で進めます。
+最初のStoppedシナリオは8秒の物理時間、目標速度0です。AUTO中は手動スライダーが無効です。
+通信待ち中のReset・モード変更では、その待機中の応答を破棄して新しい状態から再開します。
 
 ### 配置と関連コード
 
@@ -83,6 +89,21 @@ GUI右側の **PSC-ONE integration** から独立した連携ウィンドウを�
 PSC-ONE側のソフトウェア変更もsubmodule内の変更として管理してください。
 親リポジトリの変更だけを保存しても、そのソフトウェア変更は含まれません。
 
+PSC-OSはローカルの `~/Program/PSC_RV32I/PSC-ONE/software/os/` をコピー元として更新します。
+リポジトリルートで次を実行してください。コピー元の未コミットの変更も含みます。
+
+```bash
+make sync-psc-os
+# コピー元を変更する場合（PSC-ONEディレクトリを指定）:
+make sync-psc-os PSC_ONE_SOURCE=/path/to/PSC-ONE
+```
+
+`external/PSC-ONE/software/os/` の同名ファイルを内容比較して上書きします。
+起動用 `.S` とテストソースもコピーし、ビルド生成物・Pythonキャッシュ・Git管理情報は除外します。
+コピー先だけにあるファイルは削除しません。更新はこのコマンドで明示的に行います。
+submoduleの除外設定により `.S` や `tests/` は通常の `git status` に表示されないため、
+コミットに含める場合は対象を明示して `git add -f` してください。
+
 | ファイル | 役割 |
 | --- | --- |
 | `external/PSC-ONE/hardware/sim/cocotb_tb/mmio/psc_rv32_i2c.py` | 既存I2C単体テストと再利用するPythonマスター |
@@ -92,13 +113,13 @@ PSC-ONE側のソフトウェア変更もsubmodule内の変更として管理し�
 | `integration/psc_one/Makefile` | 既存PSC-OS/SoCソース一覧を使い、専用領域へビルド |
 | `integration/psc_one/cosim.py` | 起動確認、I2C変換、時間同期、ロボット子プロセス管理 |
 | `integration/psc_one/robot_cosim.sv` | 製品RTLを変更しないテスト専用の信号アダプター |
-| `integration/psc_one/boot.S` | 配置済みsubmoduleに欠けているBootROMソースを補うテスト専用起動コード |
+| `integration/psc_one/boot.S` | 統合シミュレーションで使用するテスト専用起動コード |
 | `integration/psc_one/run.py` | ビルド・実行の監督、タイムアウト、プロセスグループ回収 |
 | `balance-robot-mujoco-sim/src/simulation/psc_protocol.py` | サイズ制限・バージョン・連番を持つUnixソケットIPC |
 | `balance-robot-mujoco-sim/src/simulation/psc_worker.py` | MuJoCo状態取得、返信した車輪速度の適用、物理ステップ |
 | `balance-robot-mujoco-sim/src/simulation/psc_panel.py` | GUIの起動・停止と通信専用スレッド |
 
-通常OSの `robot_control` シェルコマンドは元から未実装です。今回のサービスは
+コピー元の通常OSには `robot_control` シェルコマンドによるI2C受信表示があります。統合シミュレーションのサービスは
 専用ビルドのカーネル内でポーリング実行し、シェルやユーザープロセスを起動しません。
 通常OSビルドの起動経路は変更していません。
 
@@ -122,9 +143,9 @@ SDAをSoCの `inout`、または入力とdrive-low出力に分離し、ピン境
 open-drainを解決することです。シミュレーション上位のLV割当も同じピンに揃える必要があります。
 CPU・NPU・I2Cレジスタ仕様の変更は不要です。この製品RTL修正は今回適用していません。
 
-また、既存OS Makefileが要求する `src/boot/psc_mbios.S` がsubmoduleにありません。
+既存OS Makefileが要求する `src/boot/psc_mbios.S` はローカルコピー元から補完しました。
 `boot.S` はS-modeの既存カーネルentryへ移る専用fixtureで、SBI・割込み・warm restart・
-通常シェルは検証対象外です。既存OSを単独ビルドできるようにする修復は含めていません。
+通常シェルは統合シミュレーションの検証対象外です。
 
 ### プロトコルと同期
 
@@ -139,29 +160,35 @@ CPU・NPU・I2Cレジスタ仕様の変更は不要です。この製品RTL修�
 | 0 | 既存LQRと同じ符号のpitch | 0.004 rad |
 | 1 | 既存LQRと同じフィルターのpitch rate | 0.04 rad/s |
 | 2 | 既存LQRと同じフィルターの平均車輪角速度 | 0.5 rad/s |
-| 3 | 目標並進速度（初期モードは0） | 0.004 m/s |
+| 3 | 目標並進速度（MANUAL/AUTO指令） | 0.004 m/s |
 | 出力 | 共通車輪角速度 | 0.25 rad/s |
 
 すべてzero point 0の符号付きINT8で、最近傍丸め（ちょうど半分はゼロから遠い方）と
 `[-128,127]` 飽和を適用します。出力範囲は `[-32,31.75] rad/s` です。
 このwire形式は既存NNの量子化形式とは異なります。
-PSC-OSは既存LQR式に対応したQ16係数で計算し、左車輪に `-output`、右に `output` を適用します。
+PSC-OSは既存LQR式に対応したQ16係数で計算し、左車輪に `-output + yaw`、右に `output + yaw` を適用します。
 Pythonはフィルター・量子化・モーター符号変換を担当し、ローカルLQRの制御計算は呼びません。
 
 制御周期は5ms、MuJoCoの物理刻みは25µs（200ステップ）です。
 1周期につき状態を1回送信し、返信までは物理を進めません。
-cocotbはI2C要求・OS処理・返信を5msのRTL時間内で行い、残り時間を進めてから返信します。
+cocotbはI2C要求・OS処理・返信を5msのRTL時間内で行います。
+`--timing strict`（ヘッドレス既定）では残りのRTL時間を進めてから返信します。
+`--timing interactive`（GUI既定）では応答後の空き時間を省き、起動確認後のI2C信号の
+各待ち時間を5000nsから1250nsに短縮します。MuJoCoの5ms刻み・全要求の実CPU計算・
+実I2C転送は維持しますが、RTL時刻と物理時刻は一致しません。厳密な時間検証にはstrictを使います。
+両モードともクロック生成はcocotbのGPI実装を使用し、エッジごとのPython実行を省きます。
 その出力を同じ論理周期のMuJoCoの200ステップに一定値として適用します。
 これは離散時間の同期モデルであり、I2C遅延を物理系内の追加遅延として再現する方式ではありません。
 OSブート時間はロボット時間に含めません。
 
 IPC待ちの間はRTL時間も止まります。壁時計の速さやGUIの描画速度による追いつき・
-周期の間引きはありません。IPCの非負整数のPython連番と論理時刻、I2Cの8bit連番を照合し、
+周期の間引きはありません。GUI下部には実時間に対する進行倍率も表示します。IPCの非負整数のPython連番と論理時刻、I2Cの8bit連番を照合し、
 連番周回はI2C側のみmod 256で扱います。未処理入力がある間の次フレーム送信は禁止です。
 
 起動応答はRTL時間2秒、各制御応答はRTL時間5ms、子プロセス接続は壁時計60秒、
 IPC待ちは壁時計120秒で打ち切ります。全体はCLIの `--timeout` で制限します。
-NACK、overrun、連番不一致、NaN/Inf、切断はエラーで終了し、別コントローラーには切り替えません。
+NACK、overrun、連番不一致、NaN/Inf、切断は連携をエラーで終了します。
+通常GUIでは連携終了後、ロボットをリセットして元のローカル制御へ戻します。
 GUIのIPC待ちは描画ロックの外で行い、終了時にソケットshutdownで解除します。
 監督プロセスはSIGINT/SIGTERMでmake・シミュレーター・MuJoCoのプロセスグループを
 TERM→KILLで回収し、Linuxではsubreaperで孤児化した孫プロセスもwaitします。
@@ -180,6 +207,9 @@ myenv/bin/python -m pip install -r integration/psc_one/requirements.txt
 # ヘッドレス統合実行。全体の壁時計タイムアウトにはビルド時間も含む
 myenv/bin/python integration/psc_one/run.py --steps 20 --timeout 1800
 
+# GUI用の高速モードをヘッドレスで検証
+myenv/bin/python integration/psc_one/run.py --steps 20 --timing interactive
+
 # cocotbが別環境の場合
 myenv/bin/python integration/psc_one/run.py --steps 20 \
   --sim-python /path/to/cocotb-env/bin/python
@@ -193,8 +223,16 @@ myenv/bin/python integration/psc_one/run.py --gui --steps 1000000 \
 ```
 
 ビルド、実行ログ、cocotb XML結果は `build/psc-one/` に出力されます。
+`--out build/別名` で検証用の独立した出力先を指定できます。
+ビルド・実行ログは起動元のターミナルにも随時表示されます（通常GUIからのStartも同様）。
+PSC-OSのUART送信はシリアル信号から復元し、`[PSC-OS UART]` を付けて表示します。
+これらの出力は `build/psc-one/run.log` にも保存されます。
+通常GUIのPSC-ONE integration欄には、CPUのPCがカーネルの`memset`範囲内にある間、
+`PSC-OS state: memset 実行中` を表示します。アドレス範囲は実行時のビルド結果から取得し、
+RTL時間10µsごとに確認します（それより短い呼び出しは表示されない場合があります）。
 実機速度での実行は想定していません。最初の確認ではブート込み3周期に約161秒かかりました。
-GUIのStopは子ウィンドウも終了し、再起動時にはOS・ロボットの状態を初期化します。
+通常GUIのStopは連携を終了し、同じウィンドウでローカル制御を再開します。
+再起動時にはOS・ロボットの状態を初期化します。
 
 通常GUI・PSC-ONE連携GUIの右側上部に `PSC-ONE I2C dump` を表示します。
 初期ウィンドウサイズは1536×1080（従来の縦横1.2倍）です。
@@ -231,9 +269,14 @@ myenv/bin/python balance-robot-mujoco-sim/tests/gui_psc_smoke.py \
 
 実機外部ピン、通常PSC-OSシェル、NPU推論、長時間倒立安定性、実時間性能は未検証です。
 
-今回のPSC-OS追加処理は `~/Program/PSC_RV32I/PSC-ONE/software/os/` にも反映済みです。
-反映先にはシェルのI2C受信表示が既にあるため、その実装を保持し、
-`src/api/robot/robot_control.c`、同 `.h`、`src/kernel/kernel.c` の3ファイルに追加しました。
-反映先Makefileのソース登録・ヘッダー依存関係は既存設定を使用します。
-反映先は `SIM_USER=minimal` で通常カーネルと `PSC_ROBOT_SIM` 専用イメージのビルドを確認済みです。
-そのツリーを使ったRTL実行は未検証で、上記20周期の結果は `external/PSC-ONE` 構成のものです。
+PSC-OSは `make sync-psc-os` で `~/Program/PSC_RV32I/PSC-ONE/software/os/` から更新済みです。
+シェルのI2C受信表示、ロボット連携サービス、起動表示の更新を含みます。
+更新後の `external/PSC-ONE` は `SIM_USER=minimal` で通常カーネルと
+`PSC_ROBOT_SIM` 専用イメージのビルドを確認済みです（`build/psc-os-sync/`）。
+更新後の構成でもinteractiveモードの20周期（100ms）のRTL統合テストが通過しました。
+strictモードでも3周期（15ms）のRTL統合テストが通過しました。
+interactive制御ループの実測は4.005秒（OSブートを除く）、ブート込みのRTL実行は約69.4秒でした。
+実時間動作には達していません。PSC関連ホストテスト18件、既存AUTO 5件、Reset 4件、
+I2C単体RTLテスト3件も通過しています。操作検証は描画なしのQtウィジェットテストで、
+Speed/Yaw、AUTO進行、通信待ち中の操作と古い応答の破棄を確認しています。
+実測ログは `build/psc-interactive-check/interactive-20.log` にあります。

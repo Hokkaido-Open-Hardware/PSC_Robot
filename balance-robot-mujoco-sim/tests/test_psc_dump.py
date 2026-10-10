@@ -83,7 +83,7 @@ class TraceTests(unittest.TestCase):
         tree = ast.parse(source.read_text())
         master_class = next(n for n in tree.body
                             if isinstance(n, ast.ClassDef) and n.name == 'I2CMaster')
-        namespace = {'I2C_ADDR': 0x42}
+        namespace = {'I2C_ADDR': 0x42, 'HALF_NS': 5000}
         exec(compile(ast.Module(body=[master_class], type_ignores=[]),
                      str(source), 'exec'), namespace)
 

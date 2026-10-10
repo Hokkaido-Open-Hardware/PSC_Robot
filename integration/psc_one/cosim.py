@@ -5,9 +5,11 @@ import socket
 import subprocess
 import sys
 import tempfile
+import time
 
 import cocotb
 from cocotb.clock import Clock
+from cocotb.handle import Immediate
 from cocotb.triggers import Timer
 from cocotb.utils import get_sim_time
 
@@ -18,6 +20,27 @@ from psc_protocol import PERIOD_NS, VERSION, receive_message, send_message, vali
 # Same master and open-drain signals as the existing standalone regression.
 from cocotb_tb.mmio.psc_rv32_i2c import I2CMaster
 from i2c_trace import I2CTraceMixin
+from os_state import memset_range
+from uart_output import UARTLines, receive_uart, flush_uart
+
+
+async def monitor_os_state(dut):
+    # Sample the CPU PC without modifying firmware or delaying I2C traffic.
+    try:
+        start, end = memset_range(Path('os/kernel.map'))
+        pc_signal = dut.system.u_chip.u_soc.u_rv32_core_axi.u_core.pc
+    except (OSError, ValueError, AttributeError) as exc:
+        dut._log.warning('PSC-OS state: unavailable (%s)', exc)
+        return
+    previous = None
+    while True:
+        await Timer(10, unit='us')
+        pc = int(pc_signal.value)
+        active = start <= pc < end
+        if active != previous:
+            dut._log.info('PSC-OS state: %s (PC=0x%08x)',
+                          'memset' if active else 'running (outside memset)', pc)
+            previous = active
 
 
 async def wait_output(master, deadline_ns, sequence):
@@ -43,9 +66,13 @@ async def robot_cosimulation(dut):
     dut.rst.value = 1
     dut.scl_master.value = 1
     dut.master_sda_low.value = 0
-    cocotb.start_soon(Clock(dut.clock, 10, unit='ns').start())
+    cocotb.start_soon(Clock(dut.clock, 10, unit='ns', impl='gpi', set_action=Immediate).start())
     await Timer(200, unit='ns')
     dut.rst.value = 0
+    cocotb.start_soon(monitor_os_state(dut))
+    uart = UARTLines(lambda line: dut._log.info('[PSC-OS UART] %s', line))
+    cocotb.start_soon(receive_uart(dut.system.uart_tx, uart))
+    cocotb.start_soon(flush_uart(uart))
     class DiagnosticMaster(I2CTraceMixin, I2CMaster):
         async def write_byte(self, data):
             result = await super().write_byte(data)
@@ -70,6 +97,14 @@ async def robot_cosimulation(dut):
     steps = int(os.environ.get('PSC_ROBOT_STEPS', '20'))
     if steps <= 0:
         raise ValueError('PSC_ROBOT_STEPS must be positive')
+    timing = os.environ.get('PSC_ROBOT_TIMING', 'strict')
+    if timing not in ('strict', 'interactive'):
+        raise ValueError(f'Unknown timing mode: {timing}')
+    # Interactive mode uses shorter bus phases after the startup check.
+    # Each phase still spans 125 core clocks, well beyond input synchronization.
+    if timing == 'interactive':
+        master.half_ns = 1250
+    dut._log.info('PSC-ONE timing: %s (plant dt=5ms, I2C phase=%dns)', timing, master.half_ns)
     process = None
     conn = None
     with tempfile.TemporaryDirectory(prefix='psc-robot-') as directory:
@@ -83,28 +118,35 @@ async def robot_cosimulation(dut):
             if os.environ.get('PSC_ROBOT_GUI') == '1':
                 command.append('--gui')
             try:
-                process = subprocess.Popen(command)
+                if os.environ.get('PSC_ROBOT_EXTERNAL') == '1':
+                    print('PSC-ONE robot socket: ' + endpoint, flush=True)
+                else:
+                    process = subprocess.Popen(command)
                 conn, _ = listener.accept()
                 conn.settimeout(120)
                 origin = int(get_sim_time(unit='ns'))
+                wall_start = time.monotonic()
                 for sequence in range(steps):
                     # Blocking IPC deliberately freezes ALL RTL time; MuJoCo is
                     # also waiting. Wall-clock latency never changes plant dt.
                     message = receive_message(conn)
                     values = validate_frame(message, sequence)
-                    deadline = origin + (sequence + 1) * PERIOD_NS
+                    deadline = (origin + (sequence + 1) * PERIOD_NS if timing == 'strict'
+                                else int(get_sim_time(unit='ns')) + PERIOD_NS)
                     await master.write_registers(0, values)
                     output = await wait_output(master, deadline, (sequence + 2) & 255)
                     remaining = deadline - int(get_sim_time(unit='ns'))
                     if remaining < 0:
                         raise TimeoutError('I2C transaction exceeded 5ms control period')
-                    if remaining:
+                    if remaining and timing == 'strict':
                         await Timer(remaining, unit='ns')
                     send_message(conn, dict(version=VERSION, sequence=sequence, output=output))
                     if sequence < 3 or sequence == steps - 1:
                         dut._log.info('robot tick=%d input=%s output=%d t_ns=%d',
                                       sequence, values, output, (sequence + 1) * PERIOD_NS)
-                if process.wait(timeout=15) != 0:
+                dut._log.info('Control loop: %.3fs wall / %.3fs plant',
+                              time.monotonic() - wall_start, steps * .005)
+                if process is not None and process.wait(timeout=15) != 0:
                     raise AssertionError('Robot child failed')
                 dut._log.info('PASS: %d PSC-OS/MuJoCo ticks, %.3fs plant time', steps, steps * .005)
             finally:

@@ -9,7 +9,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-TRACE_PATH = Path(__file__).resolve().parents[3] / 'build/psc-one/i2c.log'
+TRACE_PATH = Path(os.environ.get('PSC_I2C_TRACE',
+                  Path(__file__).resolve().parents[3] / 'build/psc-one/i2c.log'))
 
 
 class I2CDumpPanel(QGroupBox):

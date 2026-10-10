@@ -149,9 +149,16 @@ static void write_reg(uint32_t a, uint32_t v) {
 void feed(uint32_t v) {input=v; status=1;}
 ''')
             libpath = tmp / 'test.so'
+            # The shell entry now includes RV32 kernel types. Keep that ABI
+            # out of the host fixture; compute/poll and the I2C API stay intact.
+            firmware = tmp / 'robot_control.c'
+            firmware.write_text((source / 'robot/robot_control.c').read_text().replace(
+                '#include "../../kernel/kernel.h"',
+                'void s_printf(const char *fmt, ...) {(void)fmt;}\n'
+                'long uart_getchar_timeout(uint32_t timeout) {(void)timeout; return -1;}'))
             subprocess.run(['cc', '-shared', '-fPIC', '-Wall', '-Wextra', '-Werror',
-                            '-I', str(source), str(tmp / 'host.c'),
-                            str(source / 'robot/robot_control.c'), '-o', str(libpath)], check=True)
+                            '-I', str(source), '-I', str(source / 'robot'),
+                            str(tmp / 'host.c'), str(firmware), '-o', str(libpath)], check=True)
             lib = ctypes.CDLL(str(libpath))
             lib.robot_control_compute.restype = ctypes.c_int8
             lib.i2c_read_output.restype = ctypes.c_int8

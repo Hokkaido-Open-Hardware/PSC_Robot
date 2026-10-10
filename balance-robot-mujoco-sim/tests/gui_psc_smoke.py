@@ -42,12 +42,17 @@ try:
     wait_for(lambda: 'RX:' in window.i2c_dump.text.toPlainText(), 5)
     dump = window.i2c_dump.text.toPlainText()
     assert 'TX:' in dump and 'reg=0x08' in dump, dump
-    assert window.th.isRunning(), 'Standalone simulation must remain available'
+    assert not window.th.isRunning(), 'Local controller must stop during PSC-OS control'
+    assert window.psc_worker is not None and window.psc_worker.isRunning()
+    assert window.th.control_status.controller == 'PSC-ONE / PSC-OS'
+    assert [w for w in app.topLevelWidgets() if isinstance(w, Window)] == [window]
     window.grab().save(str(ROOT / 'build/psc-gui.png'))
     panel.stop_button.click()
     wait_for(lambda: panel.process.state() == QProcess.NotRunning, 15)
     (ROOT / 'build/psc-gui-connected.log').write_text(log.read_text(errors='replace'))
     assert panel.start_button.isEnabled()
+    assert window.psc_worker is None
+    assert window.th.isRunning(), 'Local controller must resume after stopping PSC-OS'
     # Immediate cancellation while building/booting must also collect children.
     panel.start_button.click()
     wait_for(lambda: panel.process.state() == QProcess.Running, 10)

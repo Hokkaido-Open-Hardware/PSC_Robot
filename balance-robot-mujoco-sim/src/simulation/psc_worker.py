@@ -14,28 +14,37 @@ from psc_protocol import RobotLink
 from robot_lqr import RobotLqr
 
 
+class PSCSensors(RobotLqr):
+    controller_name = 'PSC-ONE / PSC-OS'
+
+    def reset(self):
+        super().reset()
+        q = Rotation.from_euler('x', .02).as_quat()
+        self.data.qpos[3:7] = [q[3], q[0], q[1], q[2]]
+
+
 class RobotPlant:
     def __init__(self, model, data):
         self.model, self.data = model, data
-        self.sensors = RobotLqr(model, data)
-        self.sensors.controller_name = 'PSC-ONE / PSC-OS'
+        self.sensors = PSCSensors(model, data)
         mujoco.mj_resetData(model, data)
-        q = Rotation.from_euler('x', .02).as_quat()
-        data.qpos[3:7] = [q[3], q[0], q[1], q[2]]
+        self.sensors.reset()
         mujoco.mj_forward(model, data)
         self.substeps = control_substeps(model)
 
-    def sample(self, speed=0):
+    def sample(self, speed=0, yaw=0):
         self.sensors.set_velocity_linear_set_point(speed)
+        self.sensors.set_yaw(yaw)
         self.state = self.sensors.sample_control_input()
         return self.state
 
     def advance(self, output):
         self.sensors.record_control_output(self.state[0], output)
-        self.data.actuator('motor_l_wheel').ctrl = -output
-        self.data.actuator('motor_r_wheel').ctrl = output
+        left, right = -output + self.sensors.yaw, output + self.sensors.yaw
+        self.data.actuator('motor_l_wheel').ctrl = left
+        self.data.actuator('motor_r_wheel').ctrl = right
         self.sensors.control_status = replace(
-            self.sensors._pending_status, left_motor_command=-output, right_motor_command=output)
+            self.sensors._pending_status, left_motor_command=left, right_motor_command=right)
         for _ in range(self.substeps):
             mujoco.mj_step(self.model, self.data)
         if not np.isfinite(self.data.qpos).all() or not np.isfinite(self.data.qvel).all():
