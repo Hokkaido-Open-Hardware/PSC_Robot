@@ -35,6 +35,17 @@ If you need the PSC-ONE sources, initialize the submodule from the repository ro
 git submodule update --init --recursive
 ```
 
+## Cleaning Python caches
+
+From the repository root, run:
+
+```bash
+make clean
+```
+
+This removes `__pycache__`, `.pyc` / `.pyo` files, and pytest, mypy, and ruff
+caches. Virtual environments, `external/`, `build/`, and saved models are retained.
+
 ## Optional controllers
 
 Install the dependencies for the features you need from `balance-robot-mujoco-sim/`, with the Conda environment active:
