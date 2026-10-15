@@ -1,3 +1,6 @@
 [submodule "external/PSC-ONE"]
 	path = external/PSC-ONE
 	url = https://github.com/Hokkaido-Open-Hardware/PSC-ONE.git
+[submodule "external/Micro-Wheeled_leg-Robot"]
+	path = external/Micro-Wheeled_leg-Robot
+	url = https://github.com/MuShibo/Micro-Wheeled_leg-Robot.git
