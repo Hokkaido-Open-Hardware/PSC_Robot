@@ -1,0 +1,30 @@
+{
+  "mode": "free",
+  "simulated_seconds": 9.999999999999897,
+  "steps": 10000,
+  "meshes": 73,
+  "actuators": 4,
+  "estimated_mass_kg": 0.32,
+  "max_linkage_closure_error_m": 0.0007009102633861762,
+  "max_contacts": 8,
+  "min_chassis_height_m": 0.022733587606086587,
+  "warnings": 0,
+  "joint_range_rad": {
+    "left_hip": [
+      -1.6200374375330285e-18,
+      0.08717722194949436
+    ],
+    "right_hip": [
+      -4.347384674474597e-16,
+      0.0871769730655294
+    ],
+    "left_wheel_joint": [
+      -5.249659271294705e-15,
+      1.0981087151680589
+    ],
+    "right_wheel_joint": [
+      0.0,
+      1.0981461762002926
+    ]
+  }
+}

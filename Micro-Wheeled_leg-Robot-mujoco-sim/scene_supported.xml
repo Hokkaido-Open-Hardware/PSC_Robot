@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="Micro Wheeled-leg Robot - supported demo">
+  <compiler angle="radian" meshdir="meshes" autolimits="true" inertiafromgeom="false" />
+  <option timestep=".001" integrator="implicitfast" solver="Newton" iterations="80" tolerance="1e-10" />
+  <statistic center="0 0 .06" extent=".26" />
+  <visual>
+    <global offwidth="1280" offheight="960" azimuth="135" elevation="-22" />
+    <headlight ambient=".45 .45 .45" diffuse=".65 .65 .65" />
+  </visual>
+  <default>
+    <joint damping=".002" armature="1e-6" />
+    <default class="cad">
+      <geom type="mesh" contype="0" conaffinity="0" group="2" density="0" />
+    </default>
+    <default class="collision">
+      <geom contype="2" conaffinity="1" group="3" rgba=".3 .8 .4 .25" friction=".8 .005 .0001" solref=".006 1" condim="4" />
+    </default>
+  </default>
+  <asset>
+    <texture name="checker" type="2d" builtin="checker" width="256" height="256" rgb1=".22 .27 .32" rgb2=".28 .33 .38" />
+    <material name="floor" texture="checker" texrepeat="12 12" texuniform="true" reflectance=".1" />
+    <mesh name="part_000" file="part_000.stl" />
+    <mesh name="part_001" file="part_001.stl" />
+    <mesh name="part_002" file="part_002.stl" />
+    <mesh name="part_003" file="part_003.stl" />
+    <mesh name="part_004" file="part_004.stl" />
+    <mesh name="part_005" file="part_005.stl" />
+    <mesh name="part_006" file="part_006.stl" />
+    <mesh name="part_007" file="part_007.stl" />
+    <mesh name="part_008" file="part_008.stl" />
+    <mesh name="part_009" file="part_009.stl" />
+    <mesh name="part_010" file="part_010.stl" />
+    <mesh name="part_011" file="part_011.stl" />
+    <mesh name="part_012" file="part_012.stl" />
+    <mesh name="part_013" file="part_013.stl" />
+    <mesh name="part_014" file="part_014.stl" />
+    <mesh name="part_015" file="part_015.stl" />
+    <mesh name="part_016" file="part_016.stl" />
+    <mesh name="part_017" file="part_017.stl" />
+    <mesh name="part_018" file="part_018.stl" />
+    <mesh name="part_019" file="part_019.stl" />
+    <mesh name="part_020" file="part_020.stl" />
+    <mesh name="part_021" file="part_021.stl" />
+    <mesh name="part_022" file="part_022.stl" />
+    <mesh name="part_023" file="part_023.stl" />
+    <mesh name="part_024" file="part_024.stl" />
+    <mesh name="part_025" file="part_025.stl" />
+    <mesh name="part_026" file="part_026.stl" />
+    <mesh name="part_027" file="part_027.stl" />
+    <mesh name="part_028" file="part_028.stl" />
+    <mesh name="part_029" file="part_029.stl" />
+    <mesh name="part_030" file="part_030.stl" />
+    <mesh name="part_031" file="part_031.stl" />
+    <mesh name="part_032" file="part_032.stl" />
+    <mesh name="part_033" file="part_033.stl" />
+    <mesh name="part_034" file="part_034.stl" />
+    <mesh name="part_035" file="part_035.stl" />
+    <mesh name="part_036" file="part_036.stl" />
+    <mesh name="part_037" file="part_037.stl" />
+    <mesh name="part_038" file="part_038.stl" />
+    <mesh name="part_039" file="part_039.stl" />
+    <mesh name="part_040" file="part_040.stl" />
+    <mesh name="part_041" file="part_041.stl" />
+    <mesh name="part_042" file="part_042.stl" />
+    <mesh name="part_043" file="part_043.stl" />
+    <mesh name="part_044" file="part_044.stl" />
+    <mesh name="part_045" file="part_045.stl" />
+    <mesh name="part_046" file="part_046.stl" />
+    <mesh name="part_047" file="part_047.stl" />
+    <mesh name="part_048" file="part_048.stl" />
+    <mesh name="part_049" file="part_049.stl" />
+    <mesh name="part_050" file="part_050.stl" />
+    <mesh name="part_051" file="part_051.stl" />
+    <mesh name="part_052" file="part_052.stl" />
+    <mesh name="part_053" file="part_053.stl" />
+    <mesh name="part_054" file="part_054.stl" />
+    <mesh name="part_055" file="part_055.stl" />
+    <mesh name="part_056" file="part_056.stl" />
+    <mesh name="part_057" file="part_057.stl" />
+    <mesh name="part_058" file="part_058.stl" />
+    <mesh name="part_059" file="part_059.stl" />
+    <mesh name="part_060" file="part_060.stl" />
+    <mesh name="part_061" file="part_061.stl" />
+    <mesh name="part_062" file="part_062.stl" />
+    <mesh name="part_063" file="part_063.stl" />
+    <mesh name="part_064" file="part_064.stl" />
+    <mesh name="part_065" file="part_065.stl" />
+    <mesh name="part_066" file="part_066.stl" />
+    <mesh name="part_067" file="part_067.stl" />
+    <mesh name="part_068" file="part_068.stl" />
+    <mesh name="part_069" file="part_069.stl" />
+    <mesh name="part_070" file="part_070.stl" />
+    <mesh name="part_071" file="part_071.stl" />
+    <mesh name="part_072" file="part_072.stl" />
+  </asset>
+  <worldbody>
+    <light pos="0 -.5 1" dir="0 .5 -1" directional="true" />
+    <geom name="ground" type="plane" size="2 2 .01" material="floor" contype="1" conaffinity="2" />
+    <camera name="overview" pos=".22 -.28 .17" xyaxes=".786 .618 0 -.235 .299 .925" />
+    <body name="chassis" pos="0 0 0.065">
+      <body name="left_thigh" pos="0.00479358 0.0418 0.0155">
+        <joint name="left_hip" axis="0 1 0" range="-.45 .45" damping=".01" />
+        <body name="left_calf" pos="-0.04863711 0 -0.0186395">
+          <joint name="left_knee" axis="0 1 0" range="-1.5 1.5" />
+          <body name="left_wheel" pos="0.04673382 0.00185 -0.01777498">
+            <joint name="left_wheel_joint" axis="0 1 0" damping=".00002" />
+            <geom name="left_tire_collision" class="collision" type="cylinder" size=".0185 .0065" quat=".7071067812 .7071067812 0 0" />
+            <inertial pos="1.06199916e-09 0.0025 4.38761384e-09" mass="0.018" diaginertia="2.55196872e-06 4.08825744e-06 2.55196872e-06" />
+            <geom name="visual_019" class="cad" mesh="part_019" rgba=".58 .61 .65 1" />
+            <geom name="visual_065" class="cad" mesh="part_065" rgba=".07 .075 .08 1" />
+          </body>
+          <site name="left_calf_pin" pos="-0.01121612 0 0.00426599" size=".001" rgba="1 .5 0 1" />
+          <geom class="collision" type="capsule" size=".004" fromto="0 0 0 0.04673382 0.00185 -0.01777498" />
+          <inertial pos="0.0223124113 -0.0067 -0.0113060725" mass="0.021" diaginertia="3.98374861e-06 1.31428927e-05 1.13466441e-05" />
+          <geom name="visual_018" class="cad" mesh="part_018" rgba=".58 .61 .65 1" />
+          <geom name="visual_033" class="cad" mesh="part_033" rgba=".58 .61 .65 1" />
+          <geom name="visual_034" class="cad" mesh="part_034" rgba=".58 .61 .65 1" />
+          <geom name="visual_037" class="cad" mesh="part_037" rgba=".58 .61 .65 1" />
+          <geom name="visual_048" class="cad" mesh="part_048" rgba=".58 .61 .65 1" />
+          <geom name="visual_058" class="cad" mesh="part_058" rgba=".08 .35 .18 1" />
+          <geom name="visual_062" class="cad" mesh="part_062" rgba=".17 .19 .22 1" />
+          <geom name="visual_069" class="cad" mesh="part_069" rgba=".58 .61 .65 1" />
+        </body>
+        <geom class="collision" type="capsule" size=".006" fromto="0 0 0 -0.04863711 0 -0.0186395" />
+        <inertial pos="-0.0198185908 -0.01 -0.00482023845" mass="0.014" diaginertia="2.70950982e-06 6.98959666e-06 6.39411017e-06" />
+        <geom name="visual_003" class="cad" mesh="part_003" rgba=".58 .61 .65 1" />
+        <geom name="visual_022" class="cad" mesh="part_022" rgba=".58 .61 .65 1" />
+        <geom name="visual_024" class="cad" mesh="part_024" rgba=".17 .19 .22 1" />
+        <geom name="visual_025" class="cad" mesh="part_025" rgba=".17 .19 .22 1" />
+        <geom name="visual_031" class="cad" mesh="part_031" rgba=".58 .61 .65 1" />
+      </body>
+      <body name="left_follower" pos="-0.01290107 0.0418 0.03171416">
+        <joint name="left_follower_joint" axis="0 1 0" range="-1.5 1.5" />
+        <site name="left_follower_pin" pos="-0.04215858 0 -0.03058767" size=".001" rgba="1 .5 0 1" />
+        <inertial pos="-0.0205785706 1.94289029e-15 -0.0147883168" mass="0.002" diaginertia="2.8859728e-07 7.58865989e-07 4.71602042e-07" />
+        <geom name="visual_028" class="cad" mesh="part_028" rgba=".17 .19 .22 1" />
+        <geom name="visual_036" class="cad" mesh="part_036" rgba=".58 .61 .65 1" />
+      </body>
+      <body name="right_thigh" pos="0.00479358 -0.0418 0.0155">
+        <joint name="right_hip" axis="0 1 0" range="-.45 .45" damping=".01" />
+        <body name="right_calf" pos="-0.04863711 0 -0.0186395">
+          <joint name="right_knee" axis="0 1 0" range="-1.5 1.5" />
+          <body name="right_wheel" pos="0.04673382 -0.00185 -0.01777498">
+            <joint name="right_wheel_joint" axis="0 1 0" damping=".00002" />
+            <geom name="right_tire_collision" class="collision" type="cylinder" size=".0185 .0065" quat=".7071067812 .7071067812 0 0" />
+            <inertial pos="1.06200219e-09 -0.0025 4.38761457e-09" mass="0.018" diaginertia="2.54809351e-06 4.08050703e-06 2.54809351e-06" />
+            <geom name="visual_021" class="cad" mesh="part_021" rgba=".58 .61 .65 1" />
+            <geom name="visual_064" class="cad" mesh="part_064" rgba=".07 .075 .08 1" />
+          </body>
+          <site name="right_calf_pin" pos="-0.01121612 0 0.00426599" size=".001" rgba="1 .5 0 1" />
+          <geom class="collision" type="capsule" size=".004" fromto="0 0 0 0.04673382 -0.00185 -0.01777498" />
+          <inertial pos="0.0223124111 0.0067 -0.0113060723" mass="0.021" diaginertia="3.98374855e-06 1.31428925e-05 1.1346644e-05" />
+          <geom name="visual_020" class="cad" mesh="part_020" rgba=".58 .61 .65 1" />
+          <geom name="visual_032" class="cad" mesh="part_032" rgba=".58 .61 .65 1" />
+          <geom name="visual_035" class="cad" mesh="part_035" rgba=".58 .61 .65 1" />
+          <geom name="visual_039" class="cad" mesh="part_039" rgba=".58 .61 .65 1" />
+          <geom name="visual_050" class="cad" mesh="part_050" rgba=".58 .61 .65 1" />
+          <geom name="visual_057" class="cad" mesh="part_057" rgba=".08 .35 .18 1" />
+          <geom name="visual_063" class="cad" mesh="part_063" rgba=".17 .19 .22 1" />
+          <geom name="visual_071" class="cad" mesh="part_071" rgba=".58 .61 .65 1" />
+        </body>
+        <geom class="collision" type="capsule" size=".006" fromto="0 0 0 -0.04863711 0 -0.0186395" />
+        <inertial pos="-0.0198185908 0.01 -0.00482023845" mass="0.014" diaginertia="2.70950982e-06 6.98959666e-06 6.39411017e-06" />
+        <geom name="visual_012" class="cad" mesh="part_012" rgba=".58 .61 .65 1" />
+        <geom name="visual_023" class="cad" mesh="part_023" rgba=".58 .61 .65 1" />
+        <geom name="visual_026" class="cad" mesh="part_026" rgba=".17 .19 .22 1" />
+        <geom name="visual_027" class="cad" mesh="part_027" rgba=".17 .19 .22 1" />
+        <geom name="visual_030" class="cad" mesh="part_030" rgba=".58 .61 .65 1" />
+      </body>
+      <body name="right_follower" pos="-0.01290107 -0.0418 0.03171416">
+        <joint name="right_follower_joint" axis="0 1 0" range="-1.5 1.5" />
+        <site name="right_follower_pin" pos="-0.04215858 0 -0.03058767" size=".001" rgba="1 .5 0 1" />
+        <inertial pos="-0.0205785706 -8.39606162e-16 -0.0147883168" mass="0.002" diaginertia="2.8859728e-07 7.58865989e-07 4.71602042e-07" />
+        <geom name="visual_029" class="cad" mesh="part_029" rgba=".17 .19 .22 1" />
+        <geom name="visual_038" class="cad" mesh="part_038" rgba=".58 .61 .65 1" />
+      </body>
+      <geom name="chassis_collision" class="collision" type="box" pos=".002 0 .018" size=".028 .030 .018" />
+      <inertial pos="0.00229808149 8.77770079e-16 0.0181068679" mass="0.21" diaginertia="0.000171584184 9.65292328e-05 0.000199693648" />
+      <geom name="visual_000" class="cad" mesh="part_000" rgba=".58 .61 .65 1" />
+      <geom name="visual_001" class="cad" mesh="part_001" rgba=".58 .61 .65 1" />
+      <geom name="visual_002" class="cad" mesh="part_002" rgba=".58 .61 .65 1" />
+      <geom name="visual_004" class="cad" mesh="part_004" rgba=".58 .61 .65 1" />
+      <geom name="visual_005" class="cad" mesh="part_005" rgba=".58 .61 .65 1" />
+      <geom name="visual_006" class="cad" mesh="part_006" rgba=".58 .61 .65 1" />
+      <geom name="visual_007" class="cad" mesh="part_007" rgba=".58 .61 .65 1" />
+      <geom name="visual_008" class="cad" mesh="part_008" rgba=".58 .61 .65 1" />
+      <geom name="visual_009" class="cad" mesh="part_009" rgba=".58 .61 .65 1" />
+      <geom name="visual_010" class="cad" mesh="part_010" rgba=".58 .61 .65 1" />
+      <geom name="visual_011" class="cad" mesh="part_011" rgba=".58 .61 .65 1" />
+      <geom name="visual_013" class="cad" mesh="part_013" rgba=".58 .61 .65 1" />
+      <geom name="visual_014" class="cad" mesh="part_014" rgba=".58 .61 .65 1" />
+      <geom name="visual_015" class="cad" mesh="part_015" rgba=".58 .61 .65 1" />
+      <geom name="visual_016" class="cad" mesh="part_016" rgba=".58 .61 .65 1" />
+      <geom name="visual_017" class="cad" mesh="part_017" rgba=".58 .61 .65 1" />
+      <geom name="visual_040" class="cad" mesh="part_040" rgba=".58 .61 .65 1" />
+      <geom name="visual_041" class="cad" mesh="part_041" rgba=".17 .19 .22 1" />
+      <geom name="visual_042" class="cad" mesh="part_042" rgba=".12 .14 .18 1" />
+      <geom name="visual_043" class="cad" mesh="part_043" rgba=".17 .19 .22 1" />
+      <geom name="visual_044" class="cad" mesh="part_044" rgba=".17 .19 .22 1" />
+      <geom name="visual_045" class="cad" mesh="part_045" rgba=".58 .61 .65 1" />
+      <geom name="visual_046" class="cad" mesh="part_046" rgba=".58 .61 .65 1" />
+      <geom name="visual_047" class="cad" mesh="part_047" rgba=".58 .61 .65 1" />
+      <geom name="visual_049" class="cad" mesh="part_049" rgba=".58 .61 .65 1" />
+      <geom name="visual_051" class="cad" mesh="part_051" rgba=".58 .61 .65 1" />
+      <geom name="visual_052" class="cad" mesh="part_052" rgba=".58 .61 .65 1" />
+      <geom name="visual_053" class="cad" mesh="part_053" rgba=".58 .61 .65 1" />
+      <geom name="visual_054" class="cad" mesh="part_054" rgba=".58 .61 .65 1" />
+      <geom name="visual_055" class="cad" mesh="part_055" rgba=".58 .61 .65 1" />
+      <geom name="visual_056" class="cad" mesh="part_056" rgba=".17 .19 .22 1" />
+      <geom name="visual_059" class="cad" mesh="part_059" rgba=".58 .61 .65 1" />
+      <geom name="visual_060" class="cad" mesh="part_060" rgba=".58 .61 .65 1" />
+      <geom name="visual_061" class="cad" mesh="part_061" rgba=".58 .61 .65 1" />
+      <geom name="visual_066" class="cad" mesh="part_066" rgba=".58 .61 .65 1" />
+      <geom name="visual_067" class="cad" mesh="part_067" rgba=".58 .61 .65 1" />
+      <geom name="visual_068" class="cad" mesh="part_068" rgba=".58 .61 .65 1" />
+      <geom name="visual_070" class="cad" mesh="part_070" rgba=".58 .61 .65 1" />
+      <geom name="visual_072" class="cad" mesh="part_072" rgba=".08 .35 .18 1" />
+      <site name="imu" pos="0 0 .025" size=".001" />
+    </body>
+  </worldbody>
+  <equality>
+    <connect name="left_four_bar" site1="left_calf_pin" site2="left_follower_pin" solref=".004 1" />
+    <connect name="right_four_bar" site1="right_calf_pin" site2="right_follower_pin" solref=".004 1" />
+  </equality>
+  <actuator>
+    <position name="left_hip_servo" joint="left_hip" kp="2" kv=".04" ctrlrange="-.4 .4" forcerange="-.25 .25" />
+    <position name="right_hip_servo" joint="right_hip" kp="2" kv=".04" ctrlrange="-.4 .4" forcerange="-.25 .25" />
+    <motor name="left_wheel_motor" joint="left_wheel_joint" ctrlrange="-.03 .03" />
+    <motor name="right_wheel_motor" joint="right_wheel_joint" ctrlrange="-.03 .03" />
+  </actuator>
+  <sensor>
+    <gyro name="gyro" site="imu" />
+    <accelerometer name="accelerometer" site="imu" />
+    <framequat name="orientation" objtype="body" objname="chassis" />
+  </sensor>
+</mujoco>
